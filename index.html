@@ -3,421 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر 3tx Pro | نظام إدارة المحتوى</title>
+    <title>متجر 3tx Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             min-height: 100vh;
-            background-attachment: fixed;
-        }
-
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
             padding: 20px;
         }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        /* شاشة تسجيل الدخول الاحترافية */
         .login-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            transition: 0.5s;
         }
-
         .login-card {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 30px;
-            padding: 50px 40px;
+            padding: 50px;
             width: 90%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            max-width: 400px;
             text-align: center;
-            animation: fadeInUp 0.6s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-card h1 {
-            font-size: 32px;
-            color: #764ba2;
-            margin-bottom: 10px;
-        }
-
-        .login-card p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
+        .login-card h2 { color: #764ba2; margin-bottom: 20px; }
         .login-card input {
             width: 100%;
-            padding: 15px 20px;
-            margin: 12px 0;
-            border: 2px solid #e0e0e0;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
             border-radius: 50px;
             font-size: 16px;
-            font-family: 'Tajawal', sans-serif;
-            transition: 0.3s;
         }
-
-        .login-card input:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(118,75,162,0.2);
-        }
-
         .login-card button {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #764ba2;
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
-        }
-
-        .login-card button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(118,75,162,0.3);
-        }
-
-        .login-card .btn-signup {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
             margin-top: 10px;
         }
+        .login-card .btn-signup { background: #27ae60; }
+        .error-msg { color: red; margin-top: 10px; font-size: 14px; }
+        .success-msg { color: green; margin-top: 10px; font-size: 14px; }
 
-        .error-msg {
-            color: #e74c3c;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        /* واجهة المدير بعد تسجيل الدخول */
-        .admin-dashboard {
-            display: none;
-        }
-
-        /* Navbar احترافي */
+        .admin-panel { display: none; }
         .navbar {
             background: white;
             border-radius: 20px;
-            padding: 15px 30px;
-            margin-bottom: 30px;
+            padding: 20px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             flex-wrap: wrap;
         }
-
-        .logo h2 {
-            color: #764ba2;
-            font-size: 24px;
-        }
-
-        .logo span {
-            color: #667eea;
-        }
-
+        .logo h1 { color: #764ba2; font-size: 28px; }
         .user-info {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
-
+        .user-badge {
+            background: #e9ecef;
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
         .logout-btn {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 40px;
+            padding: 8px 20px;
+            border-radius: 50px;
             cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            transition: 0.3s;
         }
-
-        .logout-btn:hover {
-            background: #c0392b;
-            transform: scale(1.05);
-        }
-
-        /* بطاقة الإضافة */
-        .add-card {
+        .add-post {
             background: white;
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
         }
-
-        .add-card h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .add-card input, .add-card textarea {
+        .add-post h3 { color: #e67e22; margin-bottom: 15px; }
+        .add-post input, .add-post textarea {
             width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border: 2px solid #ecf0f1;
-            border-radius: 15px;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #ddd;
+            border-radius: 12px;
             font-family: 'Tajawal', sans-serif;
-            font-size: 16px;
-            transition: 0.3s;
         }
-
-        .add-card input:focus, .add-card textarea:focus {
-            outline: none;
-            border-color: #764ba2;
+        .add-post button {
+            background: #27ae60;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
         }
-
-        .add-card button {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        .image-preview {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .image-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+        .remove-img {
+            background: #e74c3c;
             color: white;
             border: none;
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
             cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
+            font-size: 12px;
         }
 
-        .add-card button:hover {
-            transform: scale(1.02);
-        }
-
-        /* شبكة المحتوى */
-        .content-grid {
+        .posts-title { color: white; margin-bottom: 15px; font-size: 24px; }
+        .posts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
-            margin-top: 20px;
         }
-
-        .content-item {
+        .post {
             background: white;
             border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-
-        .content-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-
-        .content-item h4 {
-            color: #764ba2;
-            font-size: 22px;
-            margin-bottom: 12px;
-        }
-
-        .content-item p {
-            color: #555;
-            line-height: 1.6;
+        .post h3 { color: #764ba2; margin-bottom: 10px; }
+        .post p { color: #555; line-height: 1.6; margin-bottom: 15px; }
+        .post-images {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
             margin-bottom: 15px;
         }
-
-        .views-stats {
+        .post-images img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .views {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 15px;
             padding: 8px 0;
-            border-top: 1px solid #ecf0f1;
-            border-bottom: 1px solid #ecf0f1;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
             color: #7f8c8d;
             font-size: 14px;
+            margin-bottom: 12px;
         }
-
-        .views-stats i {
-            color: #3498db;
-        }
-
         .whatsapp-btn {
             background: #25D366;
             color: white;
             border: none;
-            padding: 10px 18px;
-            border-radius: 40px;
+            padding: 10px;
+            border-radius: 50px;
             cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
             width: 100%;
-            justify-content: center;
-        }
-
-        .whatsapp-btn:hover {
-            background: #128C7E;
-            transform: scale(1.02);
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 10px;
-        }
-
-        .edit-btn, .delete-btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
             font-weight: bold;
-            transition: 0.3s;
         }
-
-        .edit-btn {
-            background: #3498db;
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+        .edit-btn, .delete-btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
             color: white;
         }
-
-        .edit-btn:hover {
-            background: #2980b9;
-        }
-
-        .delete-btn {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: #c0392b;
-        }
-
-        .empty-state {
+        .edit-btn { background: #3498db; }
+        .delete-btn { background: #e74c3c; }
+        .empty {
+            background: white;
             text-align: center;
             padding: 60px;
-            background: white;
-            border-radius: 25px;
-            color: #7f8c8d;
+            border-radius: 20px;
+            color: #888;
         }
-
-        .empty-state i {
-            font-size: 60px;
-            margin-bottom: 15px;
-            color: #bdc3c7;
-        }
-
         @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 15px;
-            }
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-            .login-card {
-                padding: 30px 20px;
-            }
+            .posts-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- شاشة تسجيل الدخول -->
+<!-- شاشة تسجيل الدخول وإنشاء الحساب -->
 <div class="login-screen" id="loginScreen">
     <div class="login-card">
-        <i class="fas fa-crown" style="font-size: 50px; color: #764ba2; margin-bottom: 15px;"></i>
-        <h1>مرحباً بعودتك</h1>
-        <p>سجل الدخول إلى لوحة التحكم</p>
-        <input type="text" id="loginUser" placeholder="اسم المستخدم" autocomplete="off">
+        <i class="fas fa-crown" style="font-size: 50px; color: #764ba2;"></i>
+        <h2>متجر 3tx Pro</h2>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم">
         <input type="password" id="loginPass" placeholder="كلمة المرور">
-        <button id="submitLogin">دخول <i class="fas fa-arrow-left"></i></button>
-        <button id="signupBtn" class="btn-signup">إنشاء حساب جديد <i class="fas fa-user-plus"></i></button>
+        <button id="loginBtn">تسجيل دخول</button>
+        <button id="signupBtn" class="btn-signup">إنشاء حساب جديد</button>
         <div id="loginError" class="error-msg"></div>
+        <div id="signupSuccess" class="success-msg"></div>
     </div>
 </div>
 
-<!-- لوحة المدير بعد تسجيل الدخول -->
-<div class="admin-dashboard" id="adminDashboard">
+<!-- لوحة المدير (تظهر فقط للمدير) -->
+<div class="admin-panel" id="adminPanel">
     <div class="navbar">
-        <div class="logo">
-            <h2><i class="fas fa-chalkboard-user"></i> <span>مدير</span> المحتوى</h2>
-        </div>
+        <div class="logo"><h1><i class="fas fa-store"></i> متجر 3tx Pro</h1></div>
         <div class="user-info">
-            <span><i class="fas fa-user-shield"></i> <span id="userNameDisplay">3tx</span> | المدير</span>
+            <span class="user-badge" id="userNameDisplay"><i class="fas fa-user"></i> مرحباً</span>
             <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
         </div>
     </div>
 
-    <div class="add-card">
-        <h3><i class="fas fa-plus-circle"></i> إضافة محتوى جديد</h3>
-        <input type="text" id="itemTitle" placeholder="العنوان (مثال: منتج جديد، عرض خاص، خبر)">
-        <textarea id="itemDesc" rows="4" placeholder="الوصف التفصيلي للمحتوى..."></textarea>
-        <button id="addItemBtn"><i class="fas fa-save"></i> نشر المحتوى</button>
+    <!-- قسم إضافة منشور (يظهر فقط للمدير) -->
+    <div class="add-post" id="addPostSection">
+        <h3><i class="fas fa-plus-circle"></i> إضافة منشور جديد</h3>
+        <input type="text" id="postTitle" placeholder="العنوان">
+        <textarea id="postDesc" rows="3" placeholder="محتوى المنشور..."></textarea>
+        <input type="file" id="postImages" multiple accept="image/*">
+        <div class="image-preview" id="imagePreview"></div>
+        <button id="publishBtn"><i class="fas fa-paper-plane"></i> نشر للعالم</button>
     </div>
 
-    <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-list-ul"></i> جميع المحتويات</h3>
-    <div id="contentList" class="content-grid"></div>
+    <div class="posts-title"><i class="fas fa-newspaper"></i> جميع المنشورات</div>
+    <div id="postsGrid" class="posts-grid"><div class="empty">لا توجد منشورات</div></div>
 </div>
 
 <script>
-    // بيانات المدير
+    // ========== إعدادات ==========
     const ADMIN_USER = "3tx";
     const ADMIN_PASS = "MM123456";
-    const WHATSAPP_NUMBER = "966500000000";
+    const WHATSAPP = "966500000000";
+    const ABLY_KEY = "0VdV6Q.M-UZTw:4lse8SO8U7yh-FbxOuYdlUwSF3Dsb9woTrZhpUsE6rY";
     
     // مفاتيح التخزين
-    const STORAGE_KEY = "professional_content_data";
-    const VIEWS_KEY = "content_views";
-    const USER_VIEWS_KEY = "user_viewed_items";
-    const USERS_KEY = "app_users";
-    const SESSION_KEY = "current_session";
+    const USERS_KEY = "3txpro_users";
+    const POSTS_KEY = "3txpro_posts";
+    const VIEWS_KEY = "3txpro_views";
+    const SESSION_KEY = "3txpro_session";
     
     let currentUser = null;
-    let contents = [];
+    let allPosts = [];
+    let ably = null;
+    let channel = null;
+    let selectedImages = [];
     
-    // ========== دوال المستخدمين ==========
-    function loadUsers() {
-        const stored = localStorage.getItem(USERS_KEY);
-        if (stored) {
-            return JSON.parse(stored);
+    // ========== Ably للبث المباشر ==========
+    async function initAbly() {
+        try {
+            ably = new Ably.Realtime({ key: ABLY_KEY });
+            channel = ably.channels.get("3txpro_store");
+            channel.subscribe("posts_update", (msg) => {
+                allPosts = msg.data;
+                savePostsLocal();
+                displayPosts();
+            });
+            channel.presence.enter();
+            channel.publish("get_posts", {});
+        } catch(e) { console.error(e); }
+    }
+    
+    async function broadcastPosts() {
+        if (channel) channel.publish("posts_update", allPosts);
+        savePostsLocal();
+    }
+    
+    // ========== المنشورات ==========
+    function loadPostsLocal() {
+        let stored = localStorage.getItem(POSTS_KEY);
+        allPosts = stored ? JSON.parse(stored) : [];
+        displayPosts();
+    }
+    
+    function savePostsLocal() {
+        localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
+    }
+    
+    // المشاهدات
+    function getViews(postId) {
+        let v = localStorage.getItem(VIEWS_KEY);
+        let views = v ? JSON.parse(v) : {};
+        return views[postId] || 0;
+    }
+    
+    function addView(postId) {
+        let today = new Date().toDateString();
+        let key = "viewed_" + today;
+        let viewed = localStorage.getItem(key);
+        viewed = viewed ? JSON.parse(viewed) : [];
+        if (viewed.includes(postId)) return;
+        viewed.push(postId);
+        localStorage.setItem(key, JSON.stringify(viewed));
+        let v = localStorage.getItem(VIEWS_KEY);
+        let views = v ? JSON.parse(v) : {};
+        views[postId] = (views[postId] || 0) + 1;
+        localStorage.setItem(VIEWS_KEY, JSON.stringify(views));
+        displayPosts();
+    }
+    
+    // تحويل الصور
+    function imagesToBase64(files) {
+        return new Promise((resolve) => {
+            let promises = [];
+            for (let i = 0; i < files.length; i++) {
+                let promise = new Promise((res) => {
+                    let reader = new FileReader();
+                    reader.onload = (e) => res(e.target.result);
+                    reader.readAsDataURL(files[i]);
+                });
+                promises.push(promise);
+            }
+            Promise.all(promises).then(resolve);
+        });
+    }
+    
+    // عرض المنشورات
+    function displayPosts() {
+        let container = document.getElementById("postsGrid");
+        if (!container) return;
+        if (allPosts.length === 0) {
+            container.innerHTML = `<div class="empty">لا توجد منشورات</div>`;
+            return;
         }
-        return [];
+        container.innerHTML = "";
+        for (let i = 0; i < allPosts.length; i++) {
+            let post = allPosts[i];
+            let views = getViews(post.id);
+            let imagesHtml = "";
+            if (post.images && post.images.length) {
+                imagesHtml = `<div class="post-images">`;
+                for (let img of post.images) {
+                    imagesHtml += `<img src="${img}" alt="صورة">`;
+                }
+                imagesHtml += `</div>`;
+            }
+            let html = `
+                <div class="post">
+                    <h3>📌 ${escapeHtml(post.title)}</h3>
+                    <p>${escapeHtml(post.desc)}</p>
+                    ${imagesHtml}
+                    <div class="views"><i class="fas fa-eye"></i> ${views} مشاهدة</div>
+                    <button class="whatsapp-btn" onclick="sendWhatsapp('${escapeHtml(post.title)}')"><i class="fab fa-whatsapp"></i> طلب عبر واتساب</button>
+            `;
+            if (currentUser && currentUser.isAdmin) {
+                html += `
+                    <div class="admin-actions">
+                        <button class="edit-btn" onclick="editPost(${post.id})"><i class="fas fa-edit"></i> تعديل</button>
+                        <button class="delete-btn" onclick="deletePost(${post.id})"><i class="fas fa-trash"></i> حذف</button>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            container.innerHTML += html;
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    window.sendWhatsapp = (title) => {
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن: ${title}`)}`, "_blank");
+    };
+    
+    // إضافة منشور (للمدير فقط)
+    async function publishPost() {
+        if (!currentUser || !currentUser.isAdmin) {
+            alert("يجب تسجيل الدخول كمدير");
+            return;
+        }
+        let title = document.getElementById("postTitle").value;
+        let desc = document.getElementById("postDesc").value;
+        if (!title.trim()) { alert("الرجاء كتابة العنوان"); return; }
+        
+        let newPost = { id: Date.now(), title: title, desc: desc, images: selectedImages };
+        allPosts.unshift(newPost);
+        await broadcastPosts();
+        
+        document.getElementById("postTitle").value = "";
+        document.getElementById("postDesc").value = "";
+        document.getElementById("postImages").value = "";
+        selectedImages = [];
+        document.getElementById("imagePreview").innerHTML = "";
+        alert("✅ تم نشر المنشور!");
+    }
+    
+    window.editPost = async (id) => {
+        let post = allPosts.find(p => p.id === id);
+        if (!post) return;
+        let newTitle = prompt("العنوان الجديد", post.title);
+        if (newTitle === null) return;
+        let newDesc = prompt("المحتوى الجديد", post.desc);
+        if (newDesc === null) return;
+        post.title = newTitle;
+        post.desc = newDesc;
+        await broadcastPosts();
+    };
+    
+    window.deletePost = async (id) => {
+        if (!confirm("حذف المنشور؟")) return;
+        allPosts = allPosts.filter(p => p.id !== id);
+        await broadcastPosts();
+    };
+    
+    // معاينة الصور
+    document.getElementById("postImages")?.addEventListener("change", async (e) => {
+        let files = Array.from(e.target.files);
+        let base64s = await imagesToBase64(files);
+        selectedImages = base64s;
+        let preview = document.getElementById("imagePreview");
+        preview.innerHTML = "";
+        base64s.forEach((img, idx) => {
+            let div = document.createElement("div");
+            div.style.position = "relative";
+            div.innerHTML = `<img src="${img}"><button class="remove-img" data-idx="${idx}">✖</button>`;
+            preview.appendChild(div);
+        });
+        document.querySelectorAll(".remove-img").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                let idx = parseInt(btn.getAttribute("data-idx"));
+                selectedImages.splice(idx, 1);
+                document.getElementById("postImages").value = "";
+                let newPreview = document.getElementById("imagePreview");
+                newPreview.innerHTML = "";
+                selectedImages.forEach((img, i) => {
+                    let div = document.createElement("div");
+                    div.innerHTML = `<img src="${img}"><button class="remove-img" data-idx="${i}">✖</button>`;
+                    newPreview.appendChild(div);
+                });
+            });
+        });
+    });
+    
+    // ========== المستخدمين (مدير + زبائن) ==========
+    function loadUsers() {
+        let stored = localStorage.getItem(USERS_KEY);
+        return stored ? JSON.parse(stored) : [];
     }
     
     function saveUsers(users) {
@@ -425,17 +473,13 @@
     }
     
     function registerUser(username, password) {
-        const users = loadUsers();
+        let users = loadUsers();
         if (users.find(u => u.username === username)) {
-            return { success: false, error: "اسم المستخدم موجود مسبقاً" };
+            return { success: false, error: "اسم المستخدم موجود" };
         }
-        if (username.length < 3) {
-            return { success: false, error: "اسم المستخدم يجب أن يكون 3 أحرف على الأقل" };
-        }
-        if (password.length < 4) {
-            return { success: false, error: "كلمة المرور يجب أن تكون 4 أحرف على الأقل" };
-        }
-        users.push({ username, password, isAdmin: false });
+        if (username.length < 3) return { success: false, error: "الاسم 3 أحرف على الأقل" };
+        if (password.length < 4) return { success: false, error: "الرقم السري 4 أحرف على الأقل" };
+        users.push({ username, password });
         saveUsers(users);
         return { success: true };
     }
@@ -444,248 +488,68 @@
         if (username === ADMIN_USER && password === ADMIN_PASS) {
             return { success: true, isAdmin: true, username: username };
         }
-        const users = loadUsers();
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-            return { success: true, isAdmin: false, username: username };
-        }
-        return { success: false, error: "اسم المستخدم أو كلمة المرور غير صحيحة" };
+        let users = loadUsers();
+        let user = users.find(u => u.username === username && u.password === password);
+        if (user) return { success: true, isAdmin: false, username: username };
+        return { success: false, error: "بيانات غير صحيحة" };
     }
     
-    // ========== المشاهدات ==========
-    function loadViews() {
-        const stored = localStorage.getItem(VIEWS_KEY);
-        return stored ? JSON.parse(stored) : {};
-    }
-    
-    function saveViews(views) {
-        localStorage.setItem(VIEWS_KEY, JSON.stringify(views));
-    }
-    
-    function getPostViews(itemId) {
-        const views = loadViews();
-        return views[itemId] || 0;
-    }
-    
-    function recordView(itemId) {
-        const today = new Date().toDateString();
-        const userKey = `${USER_VIEWS_KEY}_${today}`;
-        let viewed = localStorage.getItem(userKey);
-        viewed = viewed ? JSON.parse(viewed) : [];
-        
-        if (viewed.includes(itemId)) {
-            return false;
-        }
-        
-        viewed.push(itemId);
-        localStorage.setItem(userKey, JSON.stringify(viewed));
-        
-        let views = loadViews();
-        views[itemId] = (views[itemId] || 0) + 1;
-        saveViews(views);
-        renderContents();
-        return true;
-    }
-    
-    // ========== المحتوى ==========
-    function loadContents() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            contents = JSON.parse(stored);
-        } else {
-            contents = [];
-        }
-        renderContents();
-    }
-    
-    function saveContents() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(contents));
-    }
-    
-    function renderContents() {
-        const container = document.getElementById('contentList');
-        if (!container) return;
-        
-        if (contents.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-inbox"></i>
-                    <h3>لا يوجد محتوى بعد</h3>
-                    <p>أضف أول محتوى لك من خلال النموذج أعلاه</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = '';
-        contents.forEach(item => {
-            const viewsCount = getPostViews(item.id);
-            const card = document.createElement('div');
-            card.className = 'content-item';
-            card.innerHTML = `
-                <h4>${escapeHtml(item.title)}</h4>
-                <p>${escapeHtml(item.desc)}</p>
-                <div class="views-stats">
-                    <i class="fas fa-eye"></i> ${viewsCount} مشاهدة
-                </div>
-                <button class="whatsapp-btn" data-id="${item.id}" data-title="${escapeHtml(item.title)}">
-                    <i class="fab fa-whatsapp"></i> طلب عبر واتساب
-                </button>
-            `;
-            
-            if (currentUser && currentUser.isAdmin) {
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'item-actions';
-                actionsDiv.innerHTML = `
-                    <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> تعديل</button>
-                    <button class="delete-btn" data-id="${item.id}"><i class="fas fa-trash"></i> حذف</button>
-                `;
-                card.appendChild(actionsDiv);
-            }
-            
-            container.appendChild(card);
-        });
-        
-        document.querySelectorAll('.whatsapp-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const itemId = parseInt(btn.getAttribute('data-id'));
-                const itemTitle = btn.getAttribute('data-title');
-                recordView(itemId);
-                const message = `مرحباً، أرغب في الاستفسار عن: ${itemTitle}`;
-                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
-            });
-        });
-        
-        if (currentUser && currentUser.isAdmin) {
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    editItem(id);
-                });
-            });
-            
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(btn.getAttribute('data-id'));
-                    deleteItem(id);
-                });
-            });
-        }
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function addNewItem() {
-        const title = document.getElementById('itemTitle').value.trim();
-        const desc = document.getElementById('itemDesc').value.trim();
-        
-        if (!title) {
-            alert('الرجاء كتابة العنوان');
-            return;
-        }
-        if (!desc) {
-            alert('الرجاء كتابة الوصف');
-            return;
-        }
-        
-        const newItem = {
-            id: Date.now(),
-            title: title,
-            desc: desc
-        };
-        
-        contents.unshift(newItem);
-        saveContents();
-        renderContents();
-        
-        document.getElementById('itemTitle').value = '';
-        document.getElementById('itemDesc').value = '';
-        
-        const btn = document.getElementById('addItemBtn');
-        btn.style.transform = 'scale(0.95)';
-        setTimeout(() => { btn.style.transform = ''; }, 200);
-    }
-    
-    function editItem(id) {
-        const item = contents.find(c => c.id === id);
-        if (!item) return;
-        
-        const newTitle = prompt('✏️ تعديل العنوان', item.title);
-        if (newTitle === null) return;
-        
-        const newDesc = prompt('📝 تعديل الوصف', item.desc);
-        if (newDesc === null) return;
-        
-        item.title = newTitle.trim();
-        item.desc = newDesc.trim();
-        saveContents();
-        renderContents();
-    }
-    
-    function deleteItem(id) {
-        if (confirm('⚠️ هل أنت متأكد من حذف هذا المحتوى؟ لا يمكن التراجع.')) {
-            contents = contents.filter(c => c.id !== id);
-            saveContents();
-            renderContents();
-        }
-    }
-    
-    // ========== تسجيل الدخول والخروج ==========
-    function showLoginScreen() {
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('adminDashboard').style.display = 'none';
-        document.getElementById('loginError').innerHTML = '';
-        document.getElementById('loginUser').value = '';
-        document.getElementById('loginPass').value = '';
-    }
-    
+    // ========== واجهة تسجيل الدخول ==========
     function showAdminPanel() {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('adminDashboard').style.display = 'block';
-        document.getElementById('userNameDisplay').innerText = currentUser.username;
-        loadContents();
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        document.getElementById("userNameDisplay").innerHTML = `<i class="fas fa-user-cog"></i> ${currentUser.username} ${currentUser.isAdmin ? '(مدير)' : ''}`;
+        
+        // إظهار/إخفاء قسم إضافة المنشورات
+        let addSection = document.getElementById("addPostSection");
+        if (currentUser.isAdmin) {
+            addSection.style.display = "block";
+        } else {
+            addSection.style.display = "none";
+        }
+        
+        loadPostsLocal();
+    }
+    
+    function showLoginScreen() {
+        document.getElementById("loginScreen").style.display = "flex";
+        document.getElementById("adminPanel").style.display = "none";
+        document.getElementById("loginError").innerHTML = "";
+        document.getElementById("signupSuccess").innerHTML = "";
+        document.getElementById("loginUser").value = "";
+        document.getElementById("loginPass").value = "";
     }
     
     function handleLogin() {
-        const username = document.getElementById('loginUser').value;
-        const password = document.getElementById('loginPass').value;
-        const errorDiv = document.getElementById('loginError');
-        
-        const result = loginUser(username, password);
+        let username = document.getElementById("loginUser").value;
+        let password = document.getElementById("loginPass").value;
+        let result = loginUser(username, password);
         if (result.success) {
             currentUser = { username: result.username, isAdmin: result.isAdmin };
             localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
             showAdminPanel();
         } else {
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + result.error;
+            document.getElementById("loginError").innerHTML = result.error;
+            document.getElementById("signupSuccess").innerHTML = "";
         }
     }
     
     function handleSignup() {
-        const username = document.getElementById('loginUser').value;
-        const password = document.getElementById('loginPass').value;
-        const errorDiv = document.getElementById('loginError');
-        
+        let username = document.getElementById("loginUser").value;
+        let password = document.getElementById("loginPass").value;
         if (!username || !password) {
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> الرجاء إدخال اسم المستخدم وكلمة المرور';
+            document.getElementById("loginError").innerHTML = "الرجاء إدخال البيانات";
             return;
         }
-        
-        const result = registerUser(username, password);
+        let result = registerUser(username, password);
         if (result.success) {
-            errorDiv.innerHTML = '<i class="fas fa-check-circle" style="color:green;"></i> ✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول';
-            document.getElementById('loginUser').value = '';
-            document.getElementById('loginPass').value = '';
+            document.getElementById("signupSuccess").innerHTML = "✅ تم إنشاء الحساب! يمكنك تسجيل الدخول";
+            document.getElementById("loginError").innerHTML = "";
+            document.getElementById("loginUser").value = "";
+            document.getElementById("loginPass").value = "";
         } else {
-            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + result.error;
+            document.getElementById("loginError").innerHTML = result.error;
+            document.getElementById("signupSuccess").innerHTML = "";
         }
     }
     
@@ -696,7 +560,7 @@
     }
     
     function restoreSession() {
-        const stored = localStorage.getItem(SESSION_KEY);
+        let stored = localStorage.getItem(SESSION_KEY);
         if (stored) {
             currentUser = JSON.parse(stored);
             showAdminPanel();
@@ -706,19 +570,20 @@
     }
     
     // ========== بدء التشغيل ==========
-    document.getElementById('submitLogin').addEventListener('click', handleLogin);
-    document.getElementById('signupBtn').addEventListener('click', handleSignup);
-    document.getElementById('logoutBtn').addEventListener('click', logout);
-    document.getElementById('addItemBtn').addEventListener('click', addNewItem);
+    document.getElementById("loginBtn")?.addEventListener("click", handleLogin);
+    document.getElementById("signupBtn")?.addEventListener("click", handleSignup);
+    document.getElementById("logoutBtn")?.addEventListener("click", logout);
+    document.getElementById("publishBtn")?.addEventListener("click", publishPost);
     
-    document.getElementById('loginUser').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
+    document.getElementById("loginUser")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleLogin();
     });
-    document.getElementById('loginPass').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
+    document.getElementById("loginPass")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleLogin();
     });
     
     restoreSession();
+    initAbly();
 </script>
 </body>
-    </html>
+</html>
