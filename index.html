@@ -3,273 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر 3TX برو | النسخة الاحترافية</title>
+    <title>متجر 3TX برو</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* --- التصميم العام --- */
+        :root {
+            --primary-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --accent-purple: #764ba2;
+            --accent-blue: #667eea;
+            --success-green: #25D366;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            background: var(--primary-bg);
             min-height: 100vh;
             background-attachment: fixed;
-            color: #333;
+            overflow-x: hidden;
         }
 
-        /* شاشة تحميل أولية */
-        #splash {
-            position: fixed; top:0; left:0; width: 100%; height: 100%;
-            background: #0f2027; display: flex; justify-content: center;
-            align-items: center; z-index: 9999; color: white;
-        }
-
-        /* شاشة تسجيل الدخول */
+        /* شاشة تسجيل الدخول المرتبة */
         .login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+            background: var(--accent-blue);
+            display: flex; justify-content: center; align-items: center; z-index: 2000;
         }
 
         .login-card {
-            background: rgba(255,255,255,0.98);
-            border-radius: 30px; padding: 40px; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center;
+            background: var(--card-bg);
+            padding: 40px; border-radius: 30px; width: 90%; max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center;
+            backdrop-filter: blur(10px);
         }
+
+        .login-card h1 { color: var(--accent-purple); margin-bottom: 20px; font-weight: 800; }
 
         .login-card input {
-            width: 100%; padding: 15px; margin: 10px 0;
-            border: 2px solid #ddd; border-radius: 50px; font-family: 'Tajawal';
+            width: 100%; padding: 15px 20px; margin: 10px 0;
+            border: 2px solid #eee; border-radius: 50px; font-family: 'Tajawal';
+            font-size: 16px; outline: none; transition: 0.3s;
         }
 
+        .login-card input:focus { border-color: var(--accent-purple); }
+
         .login-card button {
-            width: 100%; padding: 15px; background: #764ba2; color: white;
-            border: none; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            width: 100%; padding: 15px; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer;
+            font-size: 18px; margin-top: 15px; transition: 0.3s;
         }
 
         /* لوحة التحكم */
-        .dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; }
+        .app-container { display: none; padding: 20px; max-width: 1200px; margin: auto; }
 
         .navbar {
-            background: white; border-radius: 20px; padding: 15px 25px;
+            background: white; border-radius: 20px; padding: 15px 30px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .add-card {
-            background: white; border-radius: 20px; padding: 25px;
-            margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        .logo h2 { color: var(--accent-purple); }
+
+        /* بطاقة الإضافة */
+        .add-section {
+            background: white; border-radius: 25px; padding: 30px;
+            margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
 
-        .add-card input, .add-card textarea {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border: 1px solid #ddd; border-radius: 10px; font-family: 'Tajawal';
+        .add-section input, .add-section textarea {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border: 1px solid #ddd; border-radius: 15px; font-family: 'Tajawal';
         }
 
-        /* شبكة المنتجات */
-        .content-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+        .btn-publish {
+            background: #27ae60; color: white; border: none; padding: 15px 40px;
+            border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px;
         }
 
-        .product-item {
-            background: white; border-radius: 15px; padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;
-            transition: 0.3s;
-        }
-        .product-item:hover { transform: translateY(-5px); }
-
-        .product-item img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; }
-
-        .views-badge {
-            position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7);
-            color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px;
+        /* شبكة المنشورات */
+        .post-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
 
-        .wa-btn {
-            background: #25D366; color: white; display: block; text-align: center;
-            padding: 10px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 10px;
+        .post-card {
+            background: white; border-radius: 25px; padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: 0.3s;
+            position: relative; overflow: hidden;
         }
 
-        .delete-btn { color: #e74c3c; cursor: pointer; margin-top: 10px; display: inline-block; font-size: 14px; }
-        
-        .toggle-form { cursor: pointer; color: #764ba2; margin-top: 15px; display: block; }
+        .post-card:hover { transform: translateY(-10px); }
+
+        .post-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; margin-bottom: 15px; }
+
+        .view-count {
+            position: absolute; top: 30px; left: 30px; background: rgba(0,0,0,0.6);
+            color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;
+        }
+
+        .wa-order-btn {
+            background: var(--success-green); color: white; display: flex; align-items: center;
+            justify-content: center; gap: 10px; padding: 12px; border-radius: 15px;
+            text-decoration: none; font-weight: bold; margin-top: 15px; transition: 0.3s;
+        }
+
+        .wa-order-btn:hover { background: #1da851; }
+
+        .delete-post { color: #e74c3c; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 10px; display: block; text-align: center; }
+
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; gap: 15px; }
+        }
     </style>
 </head>
 <body>
 
-<div id="splash"><i class="fas fa-spinner fa-spin fa-3x"></i></div>
-
-<div class="login-screen" id="loginScreen">
+<div class="login-screen" id="loginArea">
     <div class="login-card">
-        <h2 id="formTitle">متجر 3TX برو</h2>
-        <p id="formSub">سجل دخولك للمتابعة</p>
-        <input type="text" id="userInput" placeholder="اسم المستخدم">
-        <input type="password" id="passInput" placeholder="كلمة المرور">
-        <button id="loginAction">دخول</button>
-        <button id="regAction" style="display:none; background:#27ae60;">إنشاء حساب</button>
-        <span class="toggle-form" id="toggleForm">ليس لديك حساب؟ سجل الآن</span>
-        <p id="loginError" style="color:red; margin-top:10px;"></p>
+        <h1>متجر 3TX برو</h1>
+        <p style="color: #666; margin-bottom: 20px;">أهلاً بك في متجرك المفضل</p>
+        <input type="text" id="user" placeholder="اسم المستخدم">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <button id="loginBtn">دخول للمتجر</button>
+        <div id="error" style="color: red; margin-top: 10px; font-size: 14px;"></div>
     </div>
 </div>
 
-<div class="dashboard" id="mainDashboard">
+<div class="app-container" id="appArea">
     <div class="navbar">
-        <h3><i class="fas fa-store"></i> متجر 3TX برو</h3>
-        <div>
-            <span id="displayUser" style="margin-left:15px; font-weight:bold;"></span>
-            <button onclick="logout()" style="background:#e74c3c; color:white; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;">خروج</button>
+        <div class="logo"><h2><i class="fas fa-gem"></i> متجر 3TX برو</h2></div>
+        <div id="userInfo">
+            <span id="userName" style="font-weight: bold; margin-left: 10px;"></span>
+            <button onclick="logout()" style="background:#eee; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;">خروج</button>
         </div>
     </div>
 
-    <div class="add-card" id="adminPanel" style="display:none;">
-        <h4><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h4>
-        <input type="text" id="postTitle" placeholder="عنوان المنتج">
-        <textarea id="postDesc" rows="3" placeholder="وصف المنتج..."></textarea>
-        <input type="file" id="postImg" accept="image/*">
-        <button onclick="addNewPost()" style="width:100%; padding:12px; background:#27ae60; color:white; border:none; border-radius:10px; cursor:pointer;">نشر المنتج</button>
+    <div class="add-section" id="adminPanel" style="display: none;">
+        <h3 style="margin-bottom: 15px;"><i class="fas fa-plus-circle"></i> نشر عرض جديد</h3>
+        <input type="text" id="pTitle" placeholder="عنوان المنشور">
+        <textarea id="pDesc" rows="3" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
+        <input type="file" id="pImg" accept="image/*">
+        <button class="btn-publish" onclick="handlePublish()">نشر المنشور الآن</button>
     </div>
 
-    <div id="postContainer" class="content-grid"></div>
+    <div id="postsList" class="post-grid"></div>
 </div>
 
 <script>
-    // --- الإعدادات ---
-    const ADMIN_CREDS = { user: "3tx", pass: "MM123456" };
-    const MY_WHATSAPP = "964700000000"; // رقمك هنا
+    const ADMIN = { u: "3tx", p: "MM123456" };
+    const MY_WA = "964700000000"; // استبدله برقمك
 
-    // مفاتيح التخزين الثابتة لضمان عدم ضياع البيانات
-    const DB_POSTS = "3TX_DATA_POSTS_V2";
-    const DB_USERS = "3TX_DATA_USERS_V2";
-    const DB_SESSION = "3TX_DATA_SESSION_V2";
+    // مفاتيح التخزين
+    const POSTS_KEY = "3TX_STORE_POSTS";
+    const SESSION_KEY = "3TX_STORE_USER";
 
-    let posts = JSON.parse(localStorage.getItem(DB_POSTS)) || [];
-    let users = JSON.parse(localStorage.getItem(DB_USERS)) || [];
+    let allPosts = JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
 
-    // التحقق من الجلسة عند فتح الموقع
+    // التحقق من الجلسة عند التحميل
     window.onload = () => {
-        const session = JSON.parse(localStorage.getItem(DB_SESSION));
-        if (session) {
-            startApp(session.user, session.role);
+        const savedUser = localStorage.getItem(SESSION_KEY);
+        if (savedUser) {
+            enterStore(savedUser);
+        }
+    };
+
+    // تسجيل الدخول
+    document.getElementById('loginBtn').onclick = () => {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+
+        if (u === ADMIN.u && p === ADMIN.p) {
+            localStorage.setItem(SESSION_KEY, "admin");
+            enterStore("admin");
+        } else if (u !== "" && p !== "") {
+            localStorage.setItem(SESSION_KEY, u);
+            enterStore(u);
         } else {
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
-        document.getElementById('splash').style.fadeOut = "slow";
-        setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
-    };
-
-    // وظيفة تسجيل الدخول
-    document.getElementById('loginAction').onclick = () => {
-        const u = document.getElementById('userInput').value;
-        const p = document.getElementById('passInput').value;
-
-        if (u === ADMIN_CREDS.user && p === ADMIN_CREDS.pass) {
-            saveSession(u, 'admin');
-        } else {
-            const found = users.find(x => x.u === u && x.p === p);
-            if (found) saveSession(u, 'customer');
-            else document.getElementById('loginError').innerText = "بياناتك غلط يا صاحبي!";
+            document.getElementById('error').innerText = "الرجاء إدخال البيانات";
         }
     };
 
-    // وظيفة إنشاء حساب
-    document.getElementById('regAction').onclick = () => {
-        const u = document.getElementById('userInput').value;
-        const p = document.getElementById('passInput').value;
-        if (u && p) {
-            if(users.find(x => x.u === u)) return alert("الاسم محجوز!");
-            users.push({u, p});
-            localStorage.setItem(DB_USERS, JSON.stringify(users));
-            alert("تم! سجل دخولك هسا");
-            location.reload();
+    function enterStore(user) {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('appArea').style.display = 'block';
+        document.getElementById('userName').innerText = user === "admin" ? "المدير" : user;
+        
+        if (user === "admin") {
+            document.getElementById('adminPanel').style.display = 'block';
         }
-    };
-
-    function saveSession(user, role) {
-        localStorage.setItem(DB_SESSION, JSON.stringify({user, role}));
-        startApp(user, role);
-    }
-
-    function startApp(user, role) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainDashboard').style.display = 'block';
-        document.getElementById('displayUser').innerText = user;
-        if (role === 'admin') document.getElementById('adminPanel').style.display = 'block';
-        renderPosts(role);
+        
+        renderPosts(user);
     }
 
     function logout() {
-        localStorage.removeItem(DB_SESSION);
+        localStorage.removeItem(SESSION_KEY);
         location.reload();
     }
 
-    // --- إدارة المنشورات ---
-    function addNewPost() {
-        const t = document.getElementById('postTitle').value;
-        const d = document.getElementById('postDesc').value;
-        const f = document.getElementById('postImg').files[0];
+    // إدارة المنشورات
+    function handlePublish() {
+        const t = document.getElementById('pTitle').value;
+        const d = document.getElementById('pDesc').value;
+        const imgInput = document.getElementById('pImg').files[0];
 
-        if (!t || !d) return alert("املأ الفراغات!");
+        if (!t || !d) return alert("اكتب العنوان والوصف!");
 
-        if (f) {
+        if (imgInput) {
             const reader = new FileReader();
-            reader.onload = (e) => finishPost(t, d, e.target.result);
-            reader.readAsDataURL(f);
+            reader.onload = (e) => savePost(t, d, e.target.result);
+            reader.readAsDataURL(imgInput);
         } else {
-            finishPost(t, d, null);
+            savePost(t, d, null);
         }
     }
 
-    function finishPost(t, d, img) {
-        const newP = { id: Date.now(), t, d, img, views: Math.floor(Math.random() * 50) };
-        posts.unshift(newP); // يظهر الجديد أول واحد
-        localStorage.setItem(DB_POSTS, JSON.stringify(posts));
+    function savePost(t, d, img) {
+        const newPost = { id: Date.now(), t, d, img, views: Math.floor(Math.random() * 20) + 10 };
+        allPosts.unshift(newPost);
+        localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
         
-        // تصفير الحقول وتحديث فوري
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postDesc').value = '';
-        document.getElementById('postImg').value = '';
-        renderPosts('admin');
+        // مسح الحقول وتحديث فوري
+        document.getElementById('pTitle').value = '';
+        document.getElementById('pDesc').value = '';
+        document.getElementById('pImg').value = '';
+        renderPosts("admin");
     }
 
     function renderPosts(role) {
-        const container = document.getElementById('postContainer');
-        container.innerHTML = '';
+        const list = document.getElementById('postsList');
+        list.innerHTML = '';
 
-        posts.forEach(p => {
-            // زيادة المشاهدة للزبون فقط
-            if(role === 'customer') p.views++; 
+        allPosts.forEach(p => {
+            // زيادة وهمية للمشاهدات عند دخول زبون
+            if (role !== "admin") p.views += 1;
 
-            const item = document.createElement('div');
-            item.className = 'product-item';
-            item.innerHTML = `
-                <div class="views-badge"><i class="fas fa-eye"></i> ${p.views}</div>
-                ${p.img ? `<img src="${p.img}">` : ''}
-                <h4 style="margin:10px 0;">${p.t}</h4>
-                <p style="font-size:13px; color:#666;">${p.d}</p>
-                <a href="https://wa.me/${MY_WHATSAPP}?text=أريد طلب: ${p.t}" class="wa-btn"><i class="fab fa-whatsapp"></i> اطلب هسا</a>
-                ${role === 'admin' ? `<span class="delete-btn" onclick="delPost(${p.id})"><i class="fas fa-trash"></i> حذف</span>` : ''}
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.innerHTML = `
+                <div class="view-count"><i class="fas fa-eye"></i> ${p.views}</div>
+                ${p.img ? `<img src="${p.img}">` : '<div style="height:100px; background:#f5f5f5; border-radius:15px; margin-bottom:15px; display:flex; align-items:center; justify-content:center; color:#ccc;">لا توجد صورة</div>'}
+                <h3 style="color: var(--accent-purple); margin-bottom: 8px;">${p.t}</h3>
+                <p style="color: #555; font-size: 14px; line-height: 1.5; height: 60px; overflow: hidden;">${p.d}</p>
+                <a href="https://wa.me/${MY_WA}?text=أريد طلب: ${p.t}" class="wa-order-btn">
+                    <i class="fab fa-whatsapp"></i> طلب مباشر عبر واتساب
+                </a>
+                ${role === "admin" ? `<span class="delete-post" onclick="removePost(${p.id})"><i class="fas fa-trash-alt"></i> حذف المنشور</span>` : ''}
             `;
-            container.appendChild(item);
+            list.appendChild(card);
         });
-        if(role === 'customer') localStorage.setItem(DB_POSTS, JSON.stringify(posts));
+        
+        if (role !== "admin") localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
     }
 
-    window.delPost = (id) => {
-        if(confirm("متاكد تحذف؟")) {
-            posts = posts.filter(x => x.id !== id);
-            localStorage.setItem(DB_POSTS, JSON.stringify(posts));
-            renderPosts('admin');
+    window.removePost = (id) => {
+        if(confirm("هل تريد حذف هذا المنتج؟")) {
+            allPosts = allPosts.filter(p => p.id !== id);
+            localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
+            renderPosts("admin");
         }
     };
-
-    // تبديل بين دخول وتسجيل
-    document.getElementById('toggleForm').onclick = function() {
-        const isL = document.getElementById('loginAction').style.display !== 'none';
-        document.getElementById('loginAction').style.display = isL ? 'none' : 'block';
-        document.getElementById('regAction').style.display = isL ? 'block' : 'none';
-        this.innerText = isL ? "عندك حساب؟ سجل دخول" : "ماعندك حساب؟ سجل الآن";
-    };
 </script>
+
 </body>
 </html>
