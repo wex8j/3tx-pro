@@ -17,7 +17,6 @@
         }
         .container { max-width: 1200px; margin: 0 auto; }
 
-        /* شاشة تسجيل الدخول */
         .login-screen {
             position: fixed;
             top: 0;
@@ -37,7 +36,6 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
         .login-card h2 { color: #764ba2; margin-bottom: 20px; }
         .login-card input {
@@ -55,16 +53,12 @@
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
             margin-top: 10px;
+            cursor: pointer;
         }
         .login-card .btn-signup { background: #27ae60; }
-        .error-msg { color: red; margin-top: 10px; font-size: 14px; }
-        .success-msg { color: green; margin-top: 10px; font-size: 14px; }
+        .error-msg { color: red; margin-top: 10px; }
 
-        /* واجهة المدير */
         .admin-panel { display: none; }
         .navbar {
             background: white;
@@ -78,10 +72,8 @@
         }
         .logo h1 { color: #764ba2; font-size: 24px; }
         .user-info { display: flex; align-items: center; gap: 15px; }
-        .user-badge { background: #e9ecef; padding: 8px 20px; border-radius: 50px; }
         .logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 20px; border-radius: 50px; cursor: pointer; }
         
-        /* إضافة منشور */
         .add-post {
             background: white;
             border-radius: 20px;
@@ -104,13 +96,8 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
         }
-        .image-preview { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
-        .image-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
-        .remove-img { background: #e74c3c; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
         
-        /* المنشورات */
         .posts-title { color: white; margin-bottom: 15px; font-size: 22px; }
         .posts-grid {
             display: grid;
@@ -125,16 +112,24 @@
         }
         .post h3 { color: #764ba2; margin-bottom: 10px; }
         .post p { color: #555; line-height: 1.6; margin-bottom: 15px; }
-        .post-images { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-        .post-images img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }
         .views { padding: 8px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; color: #7f8c8d; font-size: 14px; margin-bottom: 12px; }
-        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 50px; cursor: pointer; width: 100%; font-weight: bold; }
+        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 10px; border-radius: 50px; cursor: pointer; width: 100%; }
         .admin-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
         .edit-btn, .delete-btn { padding: 6px 15px; border: none; border-radius: 50px; cursor: pointer; color: white; }
         .edit-btn { background: #3498db; }
         .delete-btn { background: #e74c3c; }
         .empty { background: white; text-align: center; padding: 60px; border-radius: 20px; color: #888; }
-        @media (max-width: 768px) { .posts-grid { grid-template-columns: 1fr; } }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -148,7 +143,6 @@
         <button id="loginBtn">تسجيل دخول</button>
         <button id="signupBtn" class="btn-signup">إنشاء حساب جديد</button>
         <div id="loginError" class="error-msg"></div>
-        <div id="signupSuccess" class="success-msg"></div>
     </div>
 </div>
 
@@ -156,7 +150,7 @@
     <div class="navbar">
         <div class="logo"><h1><i class="fas fa-store"></i> متجر 3tx Pro</h1></div>
         <div class="user-info">
-            <span class="user-badge" id="userNameDisplay"></span>
+            <span id="userNameDisplay"></span>
             <button class="logout-btn" id="logoutBtn">تسجيل خروج</button>
         </div>
     </div>
@@ -165,8 +159,6 @@
         <h3><i class="fas fa-plus-circle"></i> إضافة منشور جديد</h3>
         <input type="text" id="postTitle" placeholder="العنوان">
         <textarea id="postDesc" rows="3" placeholder="محتوى المنشور..."></textarea>
-        <input type="file" id="postImages" multiple accept="image/*">
-        <div class="image-preview" id="imagePreview"></div>
         <button id="publishBtn">نشر للعالم</button>
     </div>
 
@@ -174,7 +166,10 @@
     <div id="postsGrid" class="posts-grid"><div class="empty">لا توجد منشورات</div></div>
 </div>
 
+<div id="toast" class="toast">✅ تم النشر! سيظهر للجميع فوراً</div>
+
 <script>
+    // إعدادات
     const ADMIN_USER = "3tx";
     const ADMIN_PASS = "MM123456";
     const WHATSAPP = "966500000000";
@@ -184,33 +179,44 @@
     let allPosts = [];
     let ably = null;
     let channel = null;
-    let selectedImages = [];
     
     // Ably
     async function initAbly() {
         try {
             ably = new Ably.Realtime({ key: ABLY_KEY });
-            channel = ably.channels.get("store_posts");
+            channel = ably.channels.get("store");
+            
             channel.subscribe("update", (msg) => {
                 allPosts = msg.data;
                 localStorage.setItem("posts", JSON.stringify(allPosts));
                 displayPosts();
             });
+            
             channel.presence.enter();
+            
+            // طلب آخر البيانات
             channel.publish("get", {});
-        } catch(e) { console.log(e); }
-        loadLocalPosts();
+            
+            // تحميل من localStorage كنسخة احتياطية
+            let local = localStorage.getItem("posts");
+            if (local) {
+                allPosts = JSON.parse(local);
+                displayPosts();
+            }
+        } catch(e) {
+            console.log(e);
+            // إذا فشل Ably، استخدم localStorage فقط
+            let local = localStorage.getItem("posts");
+            allPosts = local ? JSON.parse(local) : [];
+            displayPosts();
+        }
     }
     
     async function broadcast() {
-        if (channel) channel.publish("update", allPosts);
+        if (channel) {
+            channel.publish("update", allPosts);
+        }
         localStorage.setItem("posts", JSON.stringify(allPosts));
-    }
-    
-    function loadLocalPosts() {
-        let stored = localStorage.getItem("posts");
-        allPosts = stored ? JSON.parse(stored) : [];
-        displayPosts();
     }
     
     // المشاهدات
@@ -235,19 +241,11 @@
         displayPosts();
     }
     
-    // الصور
-    function imagesToBase64(files) {
-        return new Promise((resolve) => {
-            let promises = [];
-            for (let f of files) {
-                promises.push(new Promise((res) => {
-                    let reader = new FileReader();
-                    reader.onload = (e) => res(e.target.result);
-                    reader.readAsDataURL(f);
-                }));
-            }
-            Promise.all(promises).then(resolve);
-        });
+    function showToast(msg) {
+        let toast = document.getElementById("toast");
+        toast.innerText = msg;
+        toast.style.display = "block";
+        setTimeout(() => { toast.style.display = "none"; }, 2000);
     }
     
     // عرض المنشورات
@@ -260,17 +258,10 @@
         }
         container.innerHTML = "";
         for (let post of allPosts) {
-            let imagesHtml = "";
-            if (post.images && post.images.length) {
-                imagesHtml = '<div class="post-images">';
-                for (let img of post.images) imagesHtml += `<img src="${img}">`;
-                imagesHtml += '</div>';
-            }
             let html = `
                 <div class="post">
                     <h3>📌 ${escapeHtml(post.title)}</h3>
                     <p>${escapeHtml(post.desc)}</p>
-                    ${imagesHtml}
                     <div class="views"><i class="fas fa-eye"></i> ${getViews(post.id)} مشاهدة</div>
                     <button class="whatsapp-btn" onclick="sendWhatsapp('${escapeHtml(post.title)}')"><i class="fab fa-whatsapp"></i> طلب عبر واتساب</button>
             `;
@@ -298,19 +289,23 @@
     
     // إضافة منشور
     async function publishPost() {
-        if (!currentUser || !currentUser.isAdmin) { alert("للمدير فقط"); return; }
+        if (!currentUser || !currentUser.isAdmin) {
+            alert("للمدير فقط");
+            return;
+        }
         let title = document.getElementById("postTitle").value;
         let desc = document.getElementById("postDesc").value;
-        if (!title.trim()) { alert("الرجاء كتابة العنوان"); return; }
-        let newPost = { id: Date.now(), title, desc, images: selectedImages };
+        if (!title.trim()) {
+            alert("الرجاء كتابة العنوان");
+            return;
+        }
+        let newPost = { id: Date.now(), title, desc };
         allPosts.unshift(newPost);
         await broadcast();
+        
         document.getElementById("postTitle").value = "";
         document.getElementById("postDesc").value = "";
-        document.getElementById("postImages").value = "";
-        selectedImages = [];
-        document.getElementById("imagePreview").innerHTML = "";
-        alert("تم النشر!");
+        showToast("✅ تم النشر! سيظهر للجميع فوراً");
     }
     
     window.editPost = async (id) => {
@@ -323,40 +318,15 @@
         post.title = newTitle;
         post.desc = newDesc;
         await broadcast();
+        showToast("✅ تم التعديل!");
     };
     
     window.deletePost = async (id) => {
-        if (!confirm("حذف؟")) return;
+        if (!confirm("حذف المنشور؟")) return;
         allPosts = allPosts.filter(p => p.id !== id);
         await broadcast();
+        showToast("🗑️ تم الحذف");
     };
-    
-    // معاينة الصور
-    document.getElementById("postImages")?.addEventListener("change", async (e) => {
-        let files = Array.from(e.target.files);
-        selectedImages = await imagesToBase64(files);
-        let preview = document.getElementById("imagePreview");
-        preview.innerHTML = "";
-        selectedImages.forEach((img, i) => {
-            let div = document.createElement("div");
-            div.innerHTML = `<img src="${img}"><button class="remove-img" data-idx="${i}">✖</button>`;
-            preview.appendChild(div);
-        });
-        document.querySelectorAll(".remove-img").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                let idx = parseInt(btn.getAttribute("data-idx"));
-                selectedImages.splice(idx, 1);
-                document.getElementById("postImages").value = "";
-                let newPreview = document.getElementById("imagePreview");
-                newPreview.innerHTML = "";
-                selectedImages.forEach((img, i) => {
-                    let div = document.createElement("div");
-                    div.innerHTML = `<img src="${img}"><button class="remove-img" data-idx="${i}">✖</button>`;
-                    newPreview.appendChild(div);
-                });
-            });
-        });
-    });
     
     // المستخدمين
     function loadUsers() {
@@ -383,13 +353,13 @@
         return { success: false, error: "بيانات غير صحيحة" };
     }
     
-    // واجهة
     function showAdminPanel() {
         document.getElementById("loginScreen").style.display = "none";
         document.getElementById("adminPanel").style.display = "block";
-        document.getElementById("userNameDisplay").innerHTML = `<i class="fas fa-user-cog"></i> ${currentUser.username} ${currentUser.isAdmin ? '(مدير)' : ''}`;
-        document.getElementById("addPostSection").style.display = currentUser.isAdmin ? "block" : "none";
-        loadLocalPosts();
+        let nameSpan = document.getElementById("userNameDisplay");
+        nameSpan.innerHTML = `<i class="fas fa-user"></i> ${currentUser.username} ${currentUser.isAdmin ? '(مدير)' : ''}`;
+        let addSection = document.getElementById("addPostSection");
+        addSection.style.display = currentUser.isAdmin ? "block" : "none";
     }
     
     function showLogin() {
@@ -413,13 +383,20 @@
     function handleSignup() {
         let username = document.getElementById("loginUser").value;
         let password = document.getElementById("loginPass").value;
-        if (!username || !password) { document.getElementById("loginError").innerHTML = "املأ الحقول"; return; }
+        if (!username || !password) {
+            document.getElementById("loginError").innerHTML = "املأ الحقول";
+            return;
+        }
         let result = register(username, password);
         if (result.success) {
-            document.getElementById("signupSuccess").innerHTML = "✅ تم إنشاء الحساب!";
-            document.getElementById("loginError").innerHTML = "";
+            document.getElementById("loginError").innerHTML = "✅ تم إنشاء الحساب! يمكنك تسجيل الدخول";
+            document.getElementById("loginError").style.color = "green";
             document.getElementById("loginUser").value = "";
             document.getElementById("loginPass").value = "";
+            setTimeout(() => {
+                document.getElementById("loginError").innerHTML = "";
+                document.getElementById("loginError").style.color = "red";
+            }, 3000);
         } else {
             document.getElementById("loginError").innerHTML = result.error;
         }
