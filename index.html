@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصتي - متجرك الخاص</title>
+    <title>متجر 3tx Pro | إدارة المحتوى</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -26,12 +26,12 @@
             margin: 0 auto;
         }
 
-        /* الهيدر */
+        /* الهيدر الرئيسي */
         .header {
             background: white;
             border-radius: 25px;
             padding: 20px 30px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -41,25 +41,43 @@
         }
 
         .logo h1 {
-            color: #764ba2;
             font-size: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo span {
-            color: #667eea;
+            font-size: 14px;
+            color: #666;
+            display: block;
         }
 
-        /* أزرار تسجيل الدخول والحساب */
-        .auth-buttons {
+        /* واجهة تسجيل الدخول المدمجة */
+        .login-bar {
+            background: #f8f9fa;
+            border-radius: 60px;
+            padding: 8px 20px;
             display: flex;
             gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .btn-login, .btn-signup, .btn-post {
-            padding: 10px 25px;
-            border: none;
+        .login-bar input {
+            padding: 10px 18px;
+            border: 1px solid #ddd;
             border-radius: 50px;
             font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            width: 160px;
+        }
+
+        .login-bar button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
@@ -75,96 +93,46 @@
             color: white;
         }
 
-        .btn-post {
-            background: #e67e22;
-            color: white;
-        }
-
-        .btn-login:hover, .btn-signup:hover, .btn-post:hover {
-            transform: scale(1.03);
-        }
-
         .user-welcome {
+            background: #e9ecef;
+            padding: 8px 20px;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             gap: 15px;
-            background: #f0f0f0;
-            padding: 8px 20px;
-            border-radius: 50px;
+            flex-wrap: wrap;
         }
 
         .user-welcome i {
             color: #764ba2;
-            font-size: 20px;
+            font-size: 18px;
         }
 
-        /* نموذج تسجيل الدخول */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
+        .admin-badge {
+            background: #e67e22;
+            color: white;
+            padding: 4px 12px;
             border-radius: 30px;
-            padding: 40px;
-            width: 90%;
-            max-width: 420px;
-            text-align: center;
-            position: relative;
+            font-size: 12px;
         }
 
-        .modal-content h2 {
-            color: #764ba2;
-            margin-bottom: 20px;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border: 2px solid #ecf0f1;
-            border-radius: 50px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 16px;
-        }
-
-        .modal-content button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .logout-btn {
+            background: #e74c3c;
             color: white;
             border: none;
+            padding: 8px 20px;
             border-radius: 50px;
+            cursor: pointer;
             font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
+            transition: 0.3s;
         }
 
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 25px;
-            cursor: pointer;
-            color: #999;
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: scale(1.02);
         }
 
-        .switch-auth {
-            margin-top: 15px;
-            color: #764ba2;
-            cursor: pointer;
-        }
-
-        /* نموذج إضافة منشور (يظهر للمدير فقط) */
+        /* نموذج إضافة منشور (للمدير فقط) */
         .post-form {
             background: white;
             border-radius: 25px;
@@ -198,7 +166,7 @@
             cursor: pointer;
         }
 
-        /* شبكة المحتوى */
+        /* شبكة المنشورات */
         .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -254,6 +222,8 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            width: 100%;
+            justify-content: center;
         }
 
         .admin-actions {
@@ -294,6 +264,9 @@
                 flex-direction: column;
                 text-align: center;
             }
+            .login-bar input {
+                width: 130px;
+            }
             .content-grid {
                 grid-template-columns: 1fr;
             }
@@ -302,12 +275,13 @@
 </head>
 <body>
 <div class="main-container">
-    <!-- الهيدر -->
+    <!-- الهيدر مع واجهة تسجيل الدخول المدمجة -->
     <div class="header">
         <div class="logo">
-            <h1><i class="fas fa-store"></i> <span>منصتي</span></h1>
+            <h1><i class="fas fa-crown"></i> متجر 3tx Pro</h1>
+            <span>أحدث العروض والمنتجات</span>
         </div>
-        <div id="authArea">
+        <div id="loginArea">
             <!-- سيتم تعبئتها بالجافاسكريبت -->
         </div>
     </div>
@@ -317,25 +291,11 @@
         <h3><i class="fas fa-plus-circle"></i> أضف منشور جديد</h3>
         <input type="text" id="postTitle" placeholder="العنوان">
         <textarea id="postDesc" rows="4" placeholder="محتوى المنشور..."></textarea>
-        <button id="publishBtn"><i class="fas fa-paper-plane"></i> نشر</button>
+        <button id="publishBtn"><i class="fas fa-paper-plane"></i> نشر المنشور</button>
     </div>
 
     <!-- شبكة المنشورات -->
     <div id="postsContainer" class="content-grid"></div>
-</div>
-
-<!-- نافذة تسجيل الدخول / إنشاء حساب -->
-<div class="modal" id="authModal">
-    <div class="modal-content">
-        <span class="close-modal" id="closeModal">&times;</span>
-        <i class="fas fa-user-circle" style="font-size: 50px; color: #764ba2;"></i>
-        <h2 id="modalTitle">تسجيل الدخول</h2>
-        <input type="text" id="authName" placeholder="اسم المستخدم">
-        <input type="password" id="authPass" placeholder="كلمة المرور">
-        <button id="authActionBtn">دخول</button>
-        <div id="authSwitch" class="switch-auth">ليس لديك حساب؟ إنشاء حساب جديد</div>
-        <div id="authError" style="color: red; margin-top: 10px;"></div>
-    </div>
 </div>
 
 <script>
@@ -347,10 +307,11 @@
     const WHATSAPP_NUMBER = "966500000000";
     
     // مفاتيح التخزين
-    const POSTS_KEY = "website_posts";
-    const USERS_KEY = "website_users";
-    const VIEWS_KEY = "post_views";
-    const USER_VIEWS_KEY = "user_daily_views";
+    const POSTS_KEY = "3txpro_posts";
+    const USERS_KEY = "3txpro_users";
+    const VIEWS_KEY = "3txpro_views";
+    const USER_VIEWS_KEY = "3txpro_user_daily_views";
+    const SESSION_KEY = "3txpro_current_user";
     
     // المستخدم الحالي
     let currentUser = null;
@@ -392,7 +353,7 @@
         return true;
     }
     
-    // تسجيل مشاهدة تلقائية عند عرض الصفحة
+    // تسجيل مشاهدة تلقائية لجميع المنشورات
     function recordAllViews() {
         posts.forEach(post => {
             recordView(post.id);
@@ -430,7 +391,7 @@
             title: title.trim(),
             desc: desc.trim()
         };
-        posts.unshift(newPost); // يضاف بالأعلى
+        posts.unshift(newPost);
         savePosts();
         renderPosts();
         return true;
@@ -472,6 +433,12 @@
         if (users.find(u => u.username === username)) {
             return { success: false, error: "اسم المستخدم موجود مسبقاً" };
         }
+        if (username.length < 3) {
+            return { success: false, error: "اسم المستخدم يجب أن يكون 3 أحرف على الأقل" };
+        }
+        if (password.length < 4) {
+            return { success: false, error: "كلمة المرور يجب أن تكون 4 أحرف على الأقل" };
+        }
         users.push({ username, password });
         saveUsers(users);
         return { success: true };
@@ -487,6 +454,13 @@
             return { success: true, isAdmin: false, username };
         }
         return { success: false, error: "اسم المستخدم أو كلمة المرور غير صحيحة" };
+    }
+    
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem(SESSION_KEY);
+        updateLoginUI();
+        renderPosts();
     }
     
     // ========== عرض الواجهة ==========
@@ -516,7 +490,6 @@
                 </button>
             `;
             
-            // إذا كان المستخدم الحالي هو المدير، نضيف أزرار التعديل والحذف
             if (currentUser && currentUser.isAdmin) {
                 const actionsDiv = document.createElement("div");
                 actionsDiv.className = "admin-actions";
@@ -530,7 +503,6 @@
             container.appendChild(card);
         });
         
-        // ربط أزرار الواتساب
         document.querySelectorAll(".whatsapp-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const postId = parseInt(btn.getAttribute("data-id"));
@@ -542,7 +514,6 @@
             });
         });
         
-        // ربط أزرار التعديل والحذف (للمدير)
         if (currentUser && currentUser.isAdmin) {
             document.querySelectorAll(".edit-btn").forEach(btn => {
                 btn.addEventListener("click", (e) => {
@@ -577,112 +548,109 @@
         });
     }
     
-    function updateAuthUI() {
-        const authArea = document.getElementById("authArea");
+    // ========== تحديث واجهة تسجيل الدخول ==========
+    function updateLoginUI() {
+        const loginArea = document.getElementById("loginArea");
         const postForm = document.getElementById("postForm");
         
         if (currentUser) {
             if (currentUser.isAdmin) {
-                authArea.innerHTML = `
+                loginArea.innerHTML = `
                     <div class="user-welcome">
                         <i class="fas fa-user-cog"></i>
-                        <span>مرحباً المدير ${currentUser.username}</span>
+                        <span>المدير ${currentUser.username}</span>
+                        <span class="admin-badge">صلاحية كاملة</span>
+                        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
                     </div>
                 `;
                 postForm.style.display = "block";
             } else {
-                authArea.innerHTML = `
+                loginArea.innerHTML = `
                     <div class="user-welcome">
                         <i class="fas fa-user"></i>
                         <span>مرحباً ${currentUser.username}</span>
+                        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
                     </div>
                 `;
                 postForm.style.display = "none";
             }
+            document.getElementById("logoutBtn")?.addEventListener("click", logout);
         } else {
-            authArea.innerHTML = `
-                <div class="auth-buttons">
-                    <button class="btn-login" id="showLoginBtn"><i class="fas fa-sign-in-alt"></i> تسجيل دخول</button>
-                    <button class="btn-signup" id="showSignupBtn"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+            loginArea.innerHTML = `
+                <div class="login-bar">
+                    <input type="text" id="loginUsername" placeholder="اسم المستخدم">
+                    <input type="password" id="loginPassword" placeholder="كلمة المرور">
+                    <button class="btn-login" id="doLoginBtn">دخول</button>
+                    <button class="btn-signup" id="doSignupBtn">إنشاء حساب</button>
                 </div>
             `;
             postForm.style.display = "none";
             
-            document.getElementById("showLoginBtn")?.addEventListener("click", () => showAuthModal("login"));
-            document.getElementById("showSignupBtn")?.addEventListener("click", () => showAuthModal("signup"));
+            document.getElementById("doLoginBtn")?.addEventListener("click", () => handleLogin());
+            document.getElementById("doSignupBtn")?.addEventListener("click", () => handleSignup());
+            document.getElementById("loginUsername")?.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") handleLogin();
+            });
+            document.getElementById("loginPassword")?.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") handleLogin();
+            });
         }
     }
     
-    // ========== نافذة تسجيل الدخول ==========
-    let currentAuthMode = "login";
-    
-    function showAuthModal(mode) {
-        currentAuthMode = mode;
-        const modal = document.getElementById("authModal");
-        const title = document.getElementById("modalTitle");
-        const actionBtn = document.getElementById("authActionBtn");
-        const switchText = document.getElementById("authSwitch");
-        const authName = document.getElementById("authName");
-        const authPass = document.getElementById("authPass");
-        const authError = document.getElementById("authError");
-        
-        authError.innerText = "";
-        authName.value = "";
-        authPass.value = "";
-        
-        if (mode === "login") {
-            title.innerText = "تسجيل الدخول";
-            actionBtn.innerText = "دخول";
-            switchText.innerText = "ليس لديك حساب؟ إنشاء حساب جديد";
-        } else {
-            title.innerText = "إنشاء حساب جديد";
-            actionBtn.innerText = "إنشاء حساب";
-            switchText.innerText = "لديك حساب؟ تسجيل دخول";
-        }
-        
-        modal.style.display = "flex";
-    }
-    
-    function handleAuthAction() {
-        const username = document.getElementById("authName").value.trim();
-        const password = document.getElementById("authPass").value;
-        const authError = document.getElementById("authError");
+    function handleLogin() {
+        const username = document.getElementById("loginUsername")?.value.trim();
+        const password = document.getElementById("loginPassword")?.value;
         
         if (!username || !password) {
-            authError.innerText = "الرجاء ملء جميع الحقول";
+            alert("الرجاء إدخال اسم المستخدم وكلمة المرور");
             return;
         }
         
-        if (currentAuthMode === "login") {
-            const result = loginUser(username, password);
-            if (result.success) {
-                currentUser = { username: result.username, isAdmin: result.isAdmin };
-                localStorage.setItem("current_user", JSON.stringify(currentUser));
-                document.getElementById("authModal").style.display = "none";
-                updateAuthUI();
-                renderPosts();
-            } else {
-                authError.innerText = result.error;
+        const result = loginUser(username, password);
+        if (result.success) {
+            currentUser = { username: result.username, isAdmin: result.isAdmin };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+            updateLoginUI();
+            renderPosts();
+            if (document.getElementById("loginUsername")) {
+                document.getElementById("loginUsername").value = "";
+                document.getElementById("loginPassword").value = "";
             }
         } else {
-            const result = registerUser(username, password);
-            if (result.success) {
-                authError.innerText = "تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن";
-                setTimeout(() => {
-                    showAuthModal("login");
-                }, 1500);
-            } else {
-                authError.innerText = result.error;
+            alert(result.error);
+        }
+    }
+    
+    function handleSignup() {
+        const username = document.getElementById("loginUsername")?.value.trim();
+        const password = document.getElementById("loginPassword")?.value;
+        
+        if (!username || !password) {
+            alert("الرجاء إدخال اسم المستخدم وكلمة المرور");
+            return;
+        }
+        
+        const result = registerUser(username, password);
+        if (result.success) {
+            alert("تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول");
+            if (document.getElementById("loginUsername")) {
+                document.getElementById("loginUsername").value = "";
+                document.getElementById("loginPassword").value = "";
             }
+        } else {
+            alert(result.error);
         }
     }
     
     // استعادة الجلسة
     function restoreSession() {
-        const stored = localStorage.getItem("current_user");
+        const stored = localStorage.getItem(SESSION_KEY);
         if (stored) {
             currentUser = JSON.parse(stored);
-            updateAuthUI();
+            updateLoginUI();
+            renderPosts();
+        } else {
+            updateLoginUI();
             renderPosts();
         }
     }
@@ -698,39 +666,15 @@
         if (addPost(title, desc)) {
             document.getElementById("postTitle").value = "";
             document.getElementById("postDesc").value = "";
-            // المنشور يظهر فوراً بدون إعادة تحميل
         }
     }
     
-    // ========== أحداث ==========
-    document.getElementById("closeModal")?.addEventListener("click", () => {
-        document.getElementById("authModal").style.display = "none";
-    });
-    
-    document.getElementById("authActionBtn")?.addEventListener("click", handleAuthAction);
-    document.getElementById("authSwitch")?.addEventListener("click", () => {
-        if (currentAuthMode === "login") {
-            showAuthModal("signup");
-        } else {
-            showAuthModal("login");
-        }
-    });
-    
+    // ========== بدء التطبيق ==========
     document.getElementById("publishBtn")?.addEventListener("click", publishPost);
     
-    // إغلاق المودال بالضغط خارجها
-    window.addEventListener("click", (e) => {
-        const modal = document.getElementById("authModal");
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-    
-    // بدء التطبيق
     loadPosts();
     restoreSession();
     
-    // تسجيل المشاهدات التلقائية بعد تحميل المنشورات
     setTimeout(() => {
         if (posts.length > 0) {
             recordAllViews();
