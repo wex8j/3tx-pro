@@ -3,268 +3,763 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر 3TX برو</title>
+    <title>لوحة المدير الاحترافية | نظام إدارة المحتوى</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root {
-            --primary-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --accent-purple: #764ba2;
-            --accent-blue: #667eea;
-            --success-green: #25D366;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background: var(--primary-bg);
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             min-height: 100vh;
             background-attachment: fixed;
-            overflow-x: hidden;
         }
 
-        /* شاشة تسجيل الدخول المرتبة */
+        /* شاشة تسجيل الدخول الاحترافية */
         .login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--accent-blue);
-            display: flex; justify-content: center; align-items: center; z-index: 2000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: 0.5s;
         }
 
         .login-card {
-            background: var(--card-bg);
-            padding: 40px; border-radius: 30px; width: 90%; max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center;
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
         }
 
-        .login-card h1 { color: var(--accent-purple); margin-bottom: 20px; font-weight: 800; }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card h1 {
+            font-size: 32px;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
 
         .login-card input {
-            width: 100%; padding: 15px 20px; margin: 10px 0;
-            border: 2px solid #eee; border-radius: 50px; font-family: 'Tajawal';
-            font-size: 16px; outline: none; transition: 0.3s;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 12px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            transition: 0.3s;
         }
 
-        .login-card input:focus { border-color: var(--accent-purple); }
+        .login-card input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118,75,162,0.2);
+        }
 
         .login-card button {
-            width: 100%; padding: 15px; background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
-            color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer;
-            font-size: 18px; margin-top: 15px; transition: 0.3s;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
         }
 
-        /* لوحة التحكم */
-        .app-container { display: none; padding: 20px; max-width: 1200px; margin: auto; }
+        .login-card button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(118,75,162,0.3);
+        }
 
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* واجهة المدير بعد تسجيل الدخول */
+        .admin-dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        /* Navbar احترافي */
         .navbar {
-            background: white; border-radius: 20px; padding: 15px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white;
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
         }
 
-        .logo h2 { color: var(--accent-purple); }
+        .logo h2 {
+            color: #764ba2;
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
 
         /* بطاقة الإضافة */
-        .add-section {
-            background: white; border-radius: 25px; padding: 30px;
-            margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        .add-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .add-section input, .add-section textarea {
-            width: 100%; padding: 14px; margin: 10px 0;
-            border: 1px solid #ddd; border-radius: 15px; font-family: 'Tajawal';
+        .add-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
 
-        .btn-publish {
-            background: #27ae60; color: white; border: none; padding: 15px 40px;
-            border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px;
+        .add-card input, .add-card textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            transition: 0.3s;
         }
 
-        /* شبكة المنشورات */
-        .post-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        .add-card input:focus, .add-card textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .add-card button {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .add-card button:hover {
+            transform: scale(1.02);
+        }
+
+        /* شبكة المحتوى */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
+            margin-top: 20px;
         }
 
-        .post-card {
-            background: white; border-radius: 25px; padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: 0.3s;
-            position: relative; overflow: hidden;
+        .content-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            position: relative;
         }
 
-        .post-card:hover { transform: translateY(-10px); }
-
-        .post-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 20px; margin-bottom: 15px; }
-
-        .view-count {
-            position: absolute; top: 30px; left: 30px; background: rgba(0,0,0,0.6);
-            color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;
+        .content-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
 
-        .wa-order-btn {
-            background: var(--success-green); color: white; display: flex; align-items: center;
-            justify-content: center; gap: 10px; padding: 12px; border-radius: 15px;
-            text-decoration: none; font-weight: bold; margin-top: 15px; transition: 0.3s;
+        .content-item h4 {
+            color: #764ba2;
+            font-size: 22px;
+            margin-bottom: 12px;
         }
 
-        .wa-order-btn:hover { background: #1da851; }
+        .content-item p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
 
-        .delete-post { color: #e74c3c; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 10px; display: block; text-align: center; }
+        /* احصائيات المشاهدة */
+        .views-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding: 8px 0;
+            border-top: 1px solid #ecf0f1;
+            border-bottom: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
 
-        @media (max-width: 600px) {
-            .navbar { flex-direction: column; gap: 15px; }
+        .views-stats i {
+            color: #3498db;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: scale(1.02);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 25px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        /* وضع الزبون (عرض عام) */
+        .customer-mode {
+            display: none;
+            padding: 20px;
+        }
+
+        .customer-header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .customer-header h1 {
+            color: #764ba2;
+        }
+
+        .switch-mode {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="login-screen" id="loginArea">
+<!-- شاشة تسجيل الدخول -->
+<div class="login-screen" id="loginScreen">
     <div class="login-card">
-        <h1>متجر 3TX برو</h1>
-        <p style="color: #666; margin-bottom: 20px;">أهلاً بك في متجرك المفضل</p>
-        <input type="text" id="user" placeholder="اسم المستخدم">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <button id="loginBtn">دخول للمتجر</button>
-        <div id="error" style="color: red; margin-top: 10px; font-size: 14px;"></div>
+        <i class="fas fa-crown" style="font-size: 50px; color: #764ba2; margin-bottom: 15px;"></i>
+        <h1>مرحباً بعودتك</h1>
+        <p>سجل الدخول إلى لوحة التحكم</p>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم" autocomplete="off">
+        <input type="password" id="loginPass" placeholder="كلمة المرور">
+        <button id="submitLogin">دخول <i class="fas fa-arrow-left"></i></button>
+        <div id="loginError" class="error-msg"></div>
+        <hr style="margin: 20px 0;">
+        <button id="viewAsCustomer" style="background: #6c757d;">👀 تصفح كزبون</button>
     </div>
 </div>
 
-<div class="app-container" id="appArea">
+<!-- وضع الزبون (العرض العام) -->
+<div class="customer-mode" id="customerMode">
+    <div class="customer-header">
+        <h1><i class="fas fa-store"></i> متجرنا</h1>
+        <p>أحدث العروض والمنتجات</p>
+    </div>
+    <div id="customerContentList" class="content-grid"></div>
+    <button class="switch-mode" id="backToLoginBtn"><i class="fas fa-user-shield"></i> دخول المدير</button>
+</div>
+
+<!-- لوحة المدير بعد تسجيل الدخول -->
+<div class="admin-dashboard" id="adminDashboard">
     <div class="navbar">
-        <div class="logo"><h2><i class="fas fa-gem"></i> متجر 3TX برو</h2></div>
-        <div id="userInfo">
-            <span id="userName" style="font-weight: bold; margin-left: 10px;"></span>
-            <button onclick="logout()" style="background:#eee; border:none; padding:8px 15px; border-radius:10px; cursor:pointer;">خروج</button>
+        <div class="logo">
+            <h2><i class="fas fa-chalkboard-user"></i> <span>مدير</span> المحتوى</h2>
+        </div>
+        <div class="user-info">
+            <span><i class="fas fa-user-shield"></i> 3tx | المدير</span>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
         </div>
     </div>
 
-    <div class="add-section" id="adminPanel" style="display: none;">
-        <h3 style="margin-bottom: 15px;"><i class="fas fa-plus-circle"></i> نشر عرض جديد</h3>
-        <input type="text" id="pTitle" placeholder="عنوان المنشور">
-        <textarea id="pDesc" rows="3" placeholder="اكتب تفاصيل المنتج هنا..."></textarea>
-        <input type="file" id="pImg" accept="image/*">
-        <button class="btn-publish" onclick="handlePublish()">نشر المنشور الآن</button>
+    <div class="add-card">
+        <h3><i class="fas fa-plus-circle"></i> إضافة محتوى جديد</h3>
+        <input type="text" id="itemTitle" placeholder="العنوان (مثال: منتج جديد، عرض خاص، خبر)">
+        <textarea id="itemDesc" rows="4" placeholder="الوصف التفصيلي للمحتوى..."></textarea>
+        <button id="addItemBtn"><i class="fas fa-save"></i> نشر المحتوى</button>
     </div>
 
-    <div id="postsList" class="post-grid"></div>
+    <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-list-ul"></i> جميع المحتويات</h3>
+    <div id="contentList" class="content-grid"></div>
+    <button class="switch-mode" id="switchToCustomer" style="position: fixed; bottom: 20px; left: 20px; background: #6c757d;"><i class="fas fa-eye"></i> معاينة كزبون</button>
 </div>
 
 <script>
-    const ADMIN = { u: "3tx", p: "MM123456" };
-    const MY_WA = "964700000000"; // استبدله برقمك
-
-    // مفاتيح التخزين
-    const POSTS_KEY = "3TX_STORE_POSTS";
-    const SESSION_KEY = "3TX_STORE_USER";
-
-    let allPosts = JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
-
-    // التحقق من الجلسة عند التحميل
-    window.onload = () => {
-        const savedUser = localStorage.getItem(SESSION_KEY);
-        if (savedUser) {
-            enterStore(savedUser);
+    // بيانات المدير
+    const ADMIN_USER = "3tx";
+    const ADMIN_PASS = "MM123456";
+    
+    // رقم الواتساب الخاص بالمدير (ضع رقمك هنا مع رمز الدولة)
+    const WHATSAPP_NUMBER = "966500000000"; // غيّر هذا إلى رقمك الحقيقي
+    
+    // مفتاح التخزين
+    const STORAGE_KEY = "professional_content_data";
+    const VIEWS_KEY = "content_views";
+    const USER_VIEWS_KEY = "user_viewed_items";
+    
+    // مصفوفة المحتوى
+    let contents = [];
+    
+    // تحميل المشاهدات من localStorage
+    function loadViews() {
+        const stored = localStorage.getItem(VIEWS_KEY);
+        if (stored) {
+            return JSON.parse(stored);
         }
-    };
-
-    // تسجيل الدخول
-    document.getElementById('loginBtn').onclick = () => {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-
-        if (u === ADMIN.u && p === ADMIN.p) {
-            localStorage.setItem(SESSION_KEY, "admin");
-            enterStore("admin");
-        } else if (u !== "" && p !== "") {
-            localStorage.setItem(SESSION_KEY, u);
-            enterStore(u);
+        return {};
+    }
+    
+    function saveViews(views) {
+        localStorage.setItem(VIEWS_KEY, JSON.stringify(views));
+    }
+    
+    // تسجيل مشاهدة حقيقية (مرة واحدة لكل زائر لكل منشور في اليوم)
+    function recordView(itemId) {
+        const today = new Date().toDateString();
+        const userViewsKey = `${USER_VIEWS_KEY}_${today}`;
+        let userViewed = localStorage.getItem(userViewsKey);
+        userViewed = userViewed ? JSON.parse(userViewed) : [];
+        
+        // إذا كان الزائر شاهد هذا المنشور اليوم، لا نزيد المشاهدة
+        if (userViewed.includes(itemId)) {
+            return false;
+        }
+        
+        // إضافة المنشور لقائمة المشاهدات
+        userViewed.push(itemId);
+        localStorage.setItem(userViewsKey, JSON.stringify(userViewed));
+        
+        // زيادة عداد المشاهدات
+        let views = loadViews();
+        views[itemId] = (views[itemId] || 0) + 1;
+        saveViews(views);
+        return true;
+    }
+    
+    // الحصول على عدد مشاهدات منشور معين
+    function getViewsCount(itemId) {
+        const views = loadViews();
+        return views[itemId] || 0;
+    }
+    
+    // تحميل البيانات من localStorage
+    function loadContents() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            contents = JSON.parse(stored);
         } else {
-            document.getElementById('error').innerText = "الرجاء إدخال البيانات";
+            // بيانات افتراضية احترافية
+            contents = [
+                { id: 1, title: "🏆 عرض العيد", desc: "خصم 50% على جميع المنتجات بمناسبة العيد. العرض ساري لمدة أسبوع فقط!" },
+                { id: 2, title: "📦 منتج جديد - آيفون 15", desc: "أحدث إصدار من آبل متوفر الآن بمواصفات خيالية. اطلبه الآن!" },
+                { id: 3, title: "🚚 توصيل مجاني", desc: "توصيل مجاني لكل الطلبات التي تتجاوز 200 ريال. استمتع بالتسوق." },
+                { id: 4, title: "⭐ خدمة عملاء 24/7", desc: "فريق الدعم متواجد على مدار الساعة لحل جميع استفساراتك." }
+            ];
+            saveContents();
         }
-    };
-
-    function enterStore(user) {
-        document.getElementById('loginArea').style.display = 'none';
-        document.getElementById('appArea').style.display = 'block';
-        document.getElementById('userName').innerText = user === "admin" ? "المدير" : user;
+        renderContents();
+    }
+    
+    function saveContents() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(contents));
+    }
+    
+    // عرض المحتوى في واجهة المدير
+    function renderContents() {
+        const container = document.getElementById('contentList');
+        if (!container) return;
         
-        if (user === "admin") {
-            document.getElementById('adminPanel').style.display = 'block';
-        }
-        
-        renderPosts(user);
-    }
-
-    function logout() {
-        localStorage.removeItem(SESSION_KEY);
-        location.reload();
-    }
-
-    // إدارة المنشورات
-    function handlePublish() {
-        const t = document.getElementById('pTitle').value;
-        const d = document.getElementById('pDesc').value;
-        const imgInput = document.getElementById('pImg').files[0];
-
-        if (!t || !d) return alert("اكتب العنوان والوصف!");
-
-        if (imgInput) {
-            const reader = new FileReader();
-            reader.onload = (e) => savePost(t, d, e.target.result);
-            reader.readAsDataURL(imgInput);
-        } else {
-            savePost(t, d, null);
-        }
-    }
-
-    function savePost(t, d, img) {
-        const newPost = { id: Date.now(), t, d, img, views: Math.floor(Math.random() * 20) + 10 };
-        allPosts.unshift(newPost);
-        localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
-        
-        // مسح الحقول وتحديث فوري
-        document.getElementById('pTitle').value = '';
-        document.getElementById('pDesc').value = '';
-        document.getElementById('pImg').value = '';
-        renderPosts("admin");
-    }
-
-    function renderPosts(role) {
-        const list = document.getElementById('postsList');
-        list.innerHTML = '';
-
-        allPosts.forEach(p => {
-            // زيادة وهمية للمشاهدات عند دخول زبون
-            if (role !== "admin") p.views += 1;
-
-            const card = document.createElement('div');
-            card.className = 'post-card';
-            card.innerHTML = `
-                <div class="view-count"><i class="fas fa-eye"></i> ${p.views}</div>
-                ${p.img ? `<img src="${p.img}">` : '<div style="height:100px; background:#f5f5f5; border-radius:15px; margin-bottom:15px; display:flex; align-items:center; justify-content:center; color:#ccc;">لا توجد صورة</div>'}
-                <h3 style="color: var(--accent-purple); margin-bottom: 8px;">${p.t}</h3>
-                <p style="color: #555; font-size: 14px; line-height: 1.5; height: 60px; overflow: hidden;">${p.d}</p>
-                <a href="https://wa.me/${MY_WA}?text=أريد طلب: ${p.t}" class="wa-order-btn">
-                    <i class="fab fa-whatsapp"></i> طلب مباشر عبر واتساب
-                </a>
-                ${role === "admin" ? `<span class="delete-post" onclick="removePost(${p.id})"><i class="fas fa-trash-alt"></i> حذف المنشور</span>` : ''}
+        if (contents.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>لا يوجد محتوى بعد</h3>
+                    <p>أضف أول محتوى لك من خلال النموذج أعلاه</p>
+                </div>
             `;
-            list.appendChild(card);
+            return;
+        }
+        
+        container.innerHTML = '';
+        contents.forEach(item => {
+            const viewsCount = getViewsCount(item.id);
+            const card = document.createElement('div');
+            card.className = 'content-item';
+            card.innerHTML = `
+                <h4>${escapeHtml(item.title)}</h4>
+                <p>${escapeHtml(item.desc)}</p>
+                <div class="views-stats">
+                    <i class="fas fa-eye"></i> ${viewsCount} مشاهدة
+                </div>
+                <div class="item-actions">
+                    <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> تعديل</button>
+                    <button class="delete-btn" data-id="${item.id}"><i class="fas fa-trash"></i> حذف</button>
+                </div>
+            `;
+            container.appendChild(card);
         });
         
-        if (role !== "admin") localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
+        // ربط أزرار التعديل والحذف
+        document.querySelectorAll('#contentList .edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                editItem(id);
+            });
+        });
+        
+        document.querySelectorAll('#contentList .delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                deleteItem(id);
+            });
+        });
     }
-
-    window.removePost = (id) => {
-        if(confirm("هل تريد حذف هذا المنتج؟")) {
-            allPosts = allPosts.filter(p => p.id !== id);
-            localStorage.setItem(POSTS_KEY, JSON.stringify(allPosts));
-            renderPosts("admin");
+    
+    // عرض المحتوى للزبون (مع زر واتساب ومشاهدات حقيقية)
+    function renderCustomerContents() {
+        const container = document.getElementById('customerContentList');
+        if (!container) return;
+        
+        if (contents.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>لا يوجد محتوى حالياً</h3>
+                    <p>ترقبوا العروض الجديدة قريباً</p>
+                </div>
+            `;
+            return;
         }
-    };
+        
+        container.innerHTML = '';
+        contents.forEach(item => {
+            const viewsCount = getViewsCount(item.id);
+            const card = document.createElement('div');
+            card.className = 'content-item';
+            card.innerHTML = `
+                <h4>${escapeHtml(item.title)}</h4>
+                <p>${escapeHtml(item.desc)}</p>
+                <div class="views-stats">
+                    <i class="fas fa-eye"></i> ${viewsCount} مشاهدة
+                </div>
+                <button class="whatsapp-btn" data-id="${item.id}" data-title="${escapeHtml(item.title)}">
+                    <i class="fab fa-whatsapp"></i> طلب عبر واتساب
+                </button>
+            `;
+            container.appendChild(card);
+        });
+        
+        // ربط أزرار الواتساب للزبون
+        document.querySelectorAll('#customerContentList .whatsapp-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const itemId = parseInt(btn.getAttribute('data-id'));
+                const itemTitle = btn.getAttribute('data-title');
+                // تسجيل مشاهدة حقيقية عند الضغط على طلب
+                recordView(itemId);
+                // إعادة تحميل العرض لتحديث عدد المشاهدات
+                renderCustomerContents();
+                renderContents(); // تحديث واجهة المدير أيضاً
+                
+                // فتح واتساب مع رسالة مخصصة
+                const message = `مرحباً، أرغب في الاستفسار عن: ${itemTitle}`;
+                const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            });
+        });
+    }
+    
+    // تسجيل مشاهدة تلقائية عند عرض المنشور للزبون
+    function recordAutoViewForCustomer() {
+        // لكل منشور نتحقق إذا كان الزائر شاهدها اليوم
+        contents.forEach(item => {
+            recordView(item.id);
+        });
+        renderCustomerContents();
+        renderContents();
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // إضافة محتوى جديد
+    function addNewItem() {
+        const title = document.getElementById('itemTitle').value.trim();
+        const desc = document.getElementById('itemDesc').value.trim();
+        
+        if (!title) {
+            alert('الرجاء كتابة العنوان');
+            return;
+        }
+        if (!desc) {
+            alert('الرجاء كتابة الوصف');
+            return;
+        }
+        
+        const newItem = {
+            id: Date.now(),
+            title: title,
+            desc: desc
+        };
+        
+        contents.push(newItem);
+        saveContents();
+        renderContents();
+        renderCustomerContents();
+        
+        document.getElementById('itemTitle').value = '';
+        document.getElementById('itemDesc').value = '';
+        
+        const btn = document.getElementById('addItemBtn');
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => { btn.style.transform = ''; }, 200);
+    }
+    
+    function editItem(id) {
+        const item = contents.find(c => c.id === id);
+        if (!item) return;
+        
+        const newTitle = prompt('✏️ تعديل العنوان', item.title);
+        if (newTitle === null) return;
+        
+        const newDesc = prompt('📝 تعديل الوصف', item.desc);
+        if (newDesc === null) return;
+        
+        item.title = newTitle.trim();
+        item.desc = newDesc.trim();
+        saveContents();
+        renderContents();
+        renderCustomerContents();
+    }
+    
+    function deleteItem(id) {
+        if (confirm('⚠️ هل أنت متأكد من حذف هذا المحتوى؟ لا يمكن التراجع.')) {
+            contents = contents.filter(c => c.id !== id);
+            saveContents();
+            renderContents();
+            renderCustomerContents();
+        }
+    }
+    
+    // تسجيل الدخول
+    function login() {
+        const username = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
+        const errorDiv = document.getElementById('loginError');
+        
+        if (username === ADMIN_USER && password === ADMIN_PASS) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('customerMode').style.display = 'none';
+            errorDiv.innerHTML = '';
+            loadContents();
+        } else {
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> اسم المستخدم أو كلمة المرور غير صحيحة';
+        }
+    }
+    
+    // فتح وضع الزبون
+    function openCustomerMode() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('customerMode').style.display = 'block';
+        loadContents();
+        recordAutoViewForCustomer(); // تسجيل المشاهدات التلقائية
+    }
+    
+    // العودة لتسجيل الدخول
+    function backToLogin() {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('customerMode').style.display = 'none';
+        document.getElementById('loginUser').value = '';
+        document.getElementById('loginPass').value = '';
+    }
+    
+    function logout() {
+        backToLogin();
+    }
+    
+    // أحداث الصفحة
+    document.getElementById('submitLogin').addEventListener('click', login);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('addItemBtn').addEventListener('click', addNewItem);
+    document.getElementById('viewAsCustomer').addEventListener('click', openCustomerMode);
+    document.getElementById('switchToCustomer').addEventListener('click', openCustomerMode);
+    document.getElementById('backToLoginBtn').addEventListener('click', backToLogin);
+    
+    document.getElementById('loginUser').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+    });
+    document.getElementById('loginPass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+    });
+    
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('customerMode').style.display = 'none';
+    
+    const checkStored = localStorage.getItem(STORAGE_KEY);
+    if (!checkStored) {
+        const defaultData = [
+            { id: 1, title: "🏆 عرض العيد", desc: "خصم 50% على جميع المنتجات بمناسبة العيد. العرض ساري لمدة أسبوع فقط!" },
+            { id: 2, title: "📦 منتج جديد - آيفون 15", desc: "أحدث إصدار من آبل متوفر الآن بمواصفات خيالية. اطلبه الآن!" },
+            { id: 3, title: "🚚 توصيل مجاني", desc: "توصيل مجاني لكل الطلبات التي تتجاوز 200 ريال. استمتع بالتسوق." },
+            { id: 4, title: "⭐ خدمة عملاء 24/7", desc: "فريق الدعم متواجد على مدار الساعة لحل جميع استفساراتك." }
+        ];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+    }
 </script>
-
 </body>
 </html>
