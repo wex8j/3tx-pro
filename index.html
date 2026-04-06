@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر 3TX برو | نظام إدارة المحتوى</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        /* شاشة تسجيل الدخول الاحترافية */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: 0.5s;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card h1 {
+            font-size: 32px;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 15px 20px;
+            margin: 12px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            transition: 0.3s;
+        }
+
+        .login-card input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118,75,162,0.2);
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .login-card button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(118,75,162,0.3);
+        }
+
+        .toggle-link {
+            display: block;
+            margin-top: 20px;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-link:hover {
+            color: #764ba2;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* واجهة المدير بعد تسجيل الدخول */
+        .admin-dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        /* Navbar احترافي */
+        .navbar {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .logo h2 {
+            color: #764ba2;
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* بطاقة الإضافة */
+        .add-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .add-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .add-card input, .add-card textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .add-card input[type="file"] {
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .add-card input:focus, .add-card textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .add-card button {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .add-card button:hover {
+            transform: scale(1.02);
+        }
+
+        /* شبكة المحتوى */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .content-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        /* شارة المشاهدات */
+        .views-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        .views-badge i {
+            margin-left: 5px;
+        }
+
+        .content-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .content-item h4 {
+            color: #764ba2;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .content-item p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .edit-btn, .delete-btn, .whatsapp-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 25px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <i class="fas fa-store" style="font-size: 50px; color: #764ba2; margin-bottom: 15px;" id="loginIcon"></i>
+        <h1 id="formTitle">متجر 3TX برو</h1>
+        <p id="formSubtitle">سجل الدخول لاستعراض المنتجات</p>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم" autocomplete="off">
+        <input type="password" id="loginPass" placeholder="كلمة المرور">
+        
+        <button id="submitLogin">دخول <i class="fas fa-arrow-left"></i></button>
+        <button id="submitRegister" style="display: none; background: linear-gradient(135deg, #27ae60, #2ecc71);">إنشاء حساب <i class="fas fa-user-plus"></i></button>
+        
+        <span class="toggle-link" id="toggleForm">ليس لديك حساب؟ إنشاء حساب للزبون</span>
+        
+        <div id="loginError" class="error-msg"></div>
+    </div>
+</div>
+
+<div class="admin-dashboard" id="adminDashboard">
+    <div class="navbar">
+        <div class="logo">
+            <h2><i class="fas fa-store"></i> <span>متجر</span> 3TX برو</h2>
+        </div>
+        <div class="user-info">
+            <span id="userInfoDisplay"><i class="fas fa-user-shield"></i> 3tx | المدير</span>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
+        </div>
+    </div>
+
+    <div class="add-card" id="addCardSection">
+        <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
+        <input type="text" id="itemTitle" placeholder="اسم المنتج أو العرض">
+        <textarea id="itemDesc" rows="4" placeholder="تفاصيل المنتج والأسعار..."></textarea>
+        <input type="file" id="itemImage" accept="image/*">
+        <button id="addItemBtn"><i class="fas fa-save"></i> نشر المنتج</button>
+    </div>
+
+    <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-box-open"></i> أحدث المنتجات</h3>
+    <div id="contentList" class="content-grid"></div>
+</div>
+
+<script>
+    // ========= إعدادات المتجر =========
+    const ADMIN_USER = "3tx";
+    const ADMIN_PASS = "MM123456";
+    const WHATSAPP_NUMBER = "9647000000000"; // <-- ضع رقم الواتساب الخاص بك هنا (مع رمز الدولة بدون أصفار)
+    // ==================================
+
+    // مفاتيح التخزين
+    const STORAGE_KEY = "3tx_store_content_data";
+    const CUSTOMERS_KEY = "3tx_store_customers_data";
+    
+    // المصفوفات والحالة
+    let contents = [];
+    let customers = JSON.parse(localStorage.getItem(CUSTOMERS_KEY)) || [];
+    let currentUserRole = 'admin'; // 'admin' or 'customer'
+    let isLoginForm = true; // للتبديل بين الدخول والإنشاء
+    
+    // تحميل البيانات من localStorage
+    function loadContents(incrementViews = false) {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            contents = JSON.parse(stored);
+        } else {
+            contents = [
+                { id: 1, title: "🏆 عرض العيد", desc: "خصم 50% على جميع المنتجات بمناسبة العيد. العرض ساري لمدة أسبوع فقط!", image: null, views: 145 },
+                { id: 2, title: "📦 منتج جديد - آيفون 15", desc: "أحدث إصدار من آبل متوفر الآن بمواصفات خيالية. اطلبه الآن!", image: null, views: 320 }
+            ];
+            saveContents();
+        }
+
+        // زيادة عداد المشاهدات عند تسجيل الدخول
+        if(incrementViews) {
+            contents = contents.map(item => {
+                item.views = (item.views || 0) + 1;
+                return item;
+            });
+            saveContents();
+        }
+
+        renderContents();
+    }
+    
+    function saveContents() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(contents));
+    }
+    
+    // عرض المحتوى في الواجهة
+    function renderContents() {
+        const container = document.getElementById('contentList');
+        if (!container) return;
+        
+        if (contents.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>لا يوجد منتجات بعد</h3>
+                    <p>أضف أول منتج لك في المتجر</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '';
+        contents.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'content-item';
+            
+            // شارة المشاهدات
+            const viewsHtml = `<div class="views-badge"><i class="fas fa-eye"></i> ${item.views || 0}</div>`;
+
+            // تجهيز عرض الصورة إذا وجدت
+            const imageHtml = item.image ? `<img src="${item.image}" alt="صورة المحتوى">` : '';
+            
+            // رسالة الواتساب
+            const waMessage = encodeURIComponent(`مرحباً، أريد طلب هذا المنتج: ${item.title}`);
+
+            // تجهيز أزرار التحكم
+            const adminActions = currentUserRole === 'admin' ? `
+                <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> تعديل</button>
+                <button class="delete-btn" data-id="${item.id}"><i class="fas fa-trash"></i> حذف</button>
+            ` : '';
+
+            card.innerHTML = `
+                ${viewsHtml}
+                ${imageHtml}
+                <h4>${escapeHtml(item.title)}</h4>
+                <p>${escapeHtml(item.desc)}</p>
+                <div class="item-actions">
+                    <a href="https://wa.me/${WHATSAPP_NUMBER}?text=${waMessage}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> طلب مباشر</a>
+                    ${adminActions}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        
+        // ربط أزرار التعديل والحذف (إذا كان المستخدم مديراً)
+        if (currentUserRole === 'admin') {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    editItem(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    deleteItem(id);
+                });
+            });
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // إضافة محتوى جديد مع الصورة
+    function addNewItem() {
+        const title = document.getElementById('itemTitle').value.trim();
+        const desc = document.getElementById('itemDesc').value.trim();
+        const imageFile = document.getElementById('itemImage').files[0];
+        
+        if (!title) {
+            alert('الرجاء كتابة العنوان');
+            return;
+        }
+        if (!desc) {
+            alert('الرجاء كتابة الوصف');
+            return;
+        }
+
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                saveNewItemData(title, desc, e.target.result);
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            saveNewItemData(title, desc, null);
+        }
+    }
+
+    // حفظ البيانات في المصفوفة
+    function saveNewItemData(title, desc, imageBase64) {
+        const newItem = {
+            id: Date.now(),
+            title: title,
+            desc: desc,
+            image: imageBase64,
+            views: 0 // يبدأ العداد من صفر
+        };
+        
+        contents.push(newItem);
+        saveContents();
+        renderContents();
+        
+        // تفريغ الحقول
+        document.getElementById('itemTitle').value = '';
+        document.getElementById('itemDesc').value = '';
+        document.getElementById('itemImage').value = '';
+        
+        const btn = document.getElementById('addItemBtn');
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => { btn.style.transform = ''; }, 200);
+    }
+    
+    // تعديل عنصر
+    function editItem(id) {
+        const item = contents.find(c => c.id === id);
+        if (!item) return;
+        
+        const newTitle = prompt('✏️ تعديل العنوان', item.title);
+        if (newTitle === null) return;
+        
+        const newDesc = prompt('📝 تعديل الوصف', item.desc);
+        if (newDesc === null) return;
+        
+        item.title = newTitle.trim();
+        item.desc = newDesc.trim();
+        saveContents();
+        renderContents();
+    }
+    
+    // حذف عنصر
+    function deleteItem(id) {
+        if (confirm('⚠️ هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع.')) {
+            contents = contents.filter(c => c.id !== id);
+            saveContents();
+            renderContents();
+        }
+    }
+
+    // التبديل بين نموذج الدخول والإنشاء
+    document.getElementById('toggleForm').addEventListener('click', () => {
+        isLoginForm = !isLoginForm;
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.innerHTML = '';
+        
+        if(isLoginForm) {
+            document.getElementById('formTitle').innerText = 'متجر 3TX برو';
+            document.getElementById('formSubtitle').innerText = 'سجل الدخول لاستعراض المنتجات';
+            document.getElementById('submitLogin').style.display = 'block';
+            document.getElementById('submitRegister').style.display = 'none';
+            document.getElementById('toggleForm').innerText = 'ليس لديك حساب؟ إنشاء حساب للزبون';
+        } else {
+            document.getElementById('formTitle').innerText = 'حساب جديد';
+            document.getElementById('formSubtitle').innerText = 'إنشاء حساب للتسوق من المتجر';
+            document.getElementById('submitLogin').style.display = 'none';
+            document.getElementById('submitRegister').style.display = 'block';
+            document.getElementById('toggleForm').innerText = 'لديك حساب بالفعل؟ تسجيل الدخول';
+        }
+    });
+
+    // إنشاء حساب زبون جديد
+    document.getElementById('submitRegister').addEventListener('click', () => {
+        const user = document.getElementById('loginUser').value.trim();
+        const pass = document.getElementById('loginPass').value;
+        const errorDiv = document.getElementById('loginError');
+        
+        if (!user || !pass) {
+            errorDiv.innerHTML = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+            return;
+        }
+        
+        // التحقق من عدم تكرار الاسم
+        if (user === ADMIN_USER || customers.some(c => c.username === user)) {
+            errorDiv.innerHTML = 'اسم المستخدم موجود مسبقاً، اختر اسماً آخر';
+            return;
+        }
+        
+        customers.push({ username: user, password: pass });
+        localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(customers));
+        
+        alert('تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.');
+        document.getElementById('toggleForm').click(); // العودة لشاشة الدخول
+        document.getElementById('loginPass').value = '';
+    });
+    
+    // تسجيل الدخول
+    function login() {
+        const username = document.getElementById('loginUser').value.trim();
+        const password = document.getElementById('loginPass').value;
+        const errorDiv = document.getElementById('loginError');
+        
+        // فحص دخول المدير
+        if (username === ADMIN_USER && password === ADMIN_PASS) {
+            currentUserRole = 'admin';
+            enterDashboard(username);
+        } 
+        // فحص دخول الزبون
+        else {
+            const customer = customers.find(c => c.username === username && c.password === password);
+            if (customer) {
+                currentUserRole = 'customer';
+                enterDashboard(username);
+            } else {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> اسم المستخدم أو كلمة المرور غير صحيحة';
+            }
+        }
+    }
+
+    // دخول لوحة التحكم وتخصيصها بناءً على الصلاحيات
+    function enterDashboard(username) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        document.getElementById('loginError').innerHTML = '';
+        
+        // تخصيص شريط التنقل
+        const roleText = currentUserRole === 'admin' ? 'المدير' : 'زبون';
+        const roleIcon = currentUserRole === 'admin' ? 'fa-user-shield' : 'fa-user';
+        document.getElementById('userInfoDisplay').innerHTML = `<i class="fas ${roleIcon}"></i> ${username} | ${roleText}`;
+        
+        // إخفاء/إظهار بطاقة إضافة المحتوى
+        if(currentUserRole === 'customer') {
+            document.getElementById('addCardSection').style.display = 'none';
+        } else {
+            document.getElementById('addCardSection').style.display = 'block';
+        }
+        
+        // تحميل المحتوى وزيادة عداد المشاهدات عند الدخول
+        loadContents(true); 
+    }
+    
+    // تسجيل الخروج
+    function logout() {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('loginUser').value = '';
+        document.getElementById('loginPass').value = '';
+        
+        if(!isLoginForm) document.getElementById('toggleForm').click();
+    }
+    
+    // أحداث الصفحة
+    document.getElementById('submitLogin').addEventListener('click', login);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('addItemBtn').addEventListener('click', addNewItem);
+    
+    // دخول بالضغط على Enter
+    document.getElementById('loginUser').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && isLoginForm) login();
+    });
+    document.getElementById('loginPass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && isLoginForm) login();
+    });
+    
+    // التأكد من أن شاشة تسجيل الدخول هي الظاهرة أولاً
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminDashboard').style.display = 'none';
+</script>
+</body>
+</html>
