@@ -3,156 +3,576 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر 3tx Pro | مباشر حول العالم</title>
+    <title>متجر 3tx Pro | نظام إدارة المحتوى</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
             padding: 20px;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { font-size: 40px; background: linear-gradient(135deg, #fff, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .logo p { color: #ccc; margin-top: 5px; }
-        
-        .auth-box { background: white; border-radius: 25px; padding: 25px; margin-bottom: 30px; text-align: center; }
-        .auth-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .auth-form input { padding: 12px 20px; border: 2px solid #ddd; border-radius: 50px; width: 200px; font-family: 'Tajawal', sans-serif; }
-        .auth-form button { padding: 12px 25px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; }
-        .btn-login { background: #764ba2; color: white; }
-        .btn-logout { background: #e74c3c; color: white; }
-        .user-card { display: inline-flex; align-items: center; gap: 20px; background: #f0f0f0; padding: 10px 25px; border-radius: 50px; }
-        
-        .add-post { background: white; border-radius: 25px; padding: 25px; margin-bottom: 30px; display: none; border: 2px solid #e67e22; }
-        .add-post h3 { color: #e67e22; margin-bottom: 15px; }
-        .add-post input, .add-post textarea { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ddd; border-radius: 12px; font-family: 'Tajawal', sans-serif; }
-        .add-post button { background: #27ae60; color: white; padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
-        
-        .posts-title { color: white; margin-bottom: 15px; font-size: 24px; }
-        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-        .post { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .post h3 { color: #764ba2; margin-bottom: 10px; }
-        .post p { color: #555; line-height: 1.6; margin-bottom: 15px; }
-        .post-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
-        .whatsapp-btn { background: #25D366; color: white; border: none; padding: 8px 18px; border-radius: 50px; cursor: pointer; }
-        .admin-btns { display: flex; gap: 10px; }
-        .edit-btn, .delete-btn { padding: 6px 15px; border: none; border-radius: 50px; cursor: pointer; color: white; }
-        .edit-btn { background: #3498db; }
-        .delete-btn { background: #e74c3c; }
-        .empty { background: white; text-align: center; padding: 60px; border-radius: 20px; color: #888; }
-        .loading { text-align: center; color: white; padding: 50px; }
-        .real-time-badge { background: #27ae60; color: white; font-size: 12px; padding: 4px 12px; border-radius: 30px; display: inline-block; margin-right: 10px; }
+
+        /* شاشة تسجيل الدخول الاحترافية */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: 0.5s;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card h1 {
+            font-size: 32px;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 15px 20px;
+            margin: 12px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            transition: 0.3s;
+        }
+
+        .login-card input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118,75,162,0.2);
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .login-card button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(118,75,162,0.3);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* واجهة المدير بعد تسجيل الدخول */
+        .admin-dashboard {
+            display: none;
+        }
+
+        /* Navbar احترافي */
+        .navbar {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .logo h2 {
+            color: #764ba2;
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .real-time-badge {
+            background: #27ae60;
+            color: white;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            margin-right: 10px;
+        }
+
+        /* بطاقة الإضافة */
+        .add-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .add-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .add-card input, .add-card textarea {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .add-card input:focus, .add-card textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .add-card button {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .add-card button:hover {
+            transform: scale(1.02);
+        }
+
+        /* شبكة المحتوى */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .content-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .content-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .content-item h4 {
+            color: #764ba2;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .content-item p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .views-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding: 8px 0;
+            border-top: 1px solid #ecf0f1;
+            border-bottom: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .views-stats i {
+            color: #3498db;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: scale(1.02);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2980b9;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 25px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="logo">
-        <h1><i class="fas fa-crown"></i> متجر 3tx Pro</h1>
-        <p>أحدث العروض والمنتجات <span class="real-time-badge"><i class="fas fa-broadcast-tower"></i> مباشر حول العالم</span></p>
+
+<!-- شاشة تسجيل الدخول -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <i class="fas fa-crown" style="font-size: 50px; color: #764ba2; margin-bottom: 15px;"></i>
+        <h1>مرحباً بعودتك</h1>
+        <p>سجل الدخول إلى لوحة التحكم</p>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم" autocomplete="off">
+        <input type="password" id="loginPass" placeholder="كلمة المرور">
+        <button id="submitLogin">دخول <i class="fas fa-arrow-left"></i></button>
+        <div id="loginError" class="error-msg"></div>
+    </div>
+</div>
+
+<!-- لوحة المدير بعد تسجيل الدخول -->
+<div class="admin-dashboard" id="adminDashboard">
+    <div class="navbar">
+        <div class="logo">
+            <h2><i class="fas fa-chalkboard-user"></i> <span>مدير</span> المحتوى <span class="real-time-badge"><i class="fas fa-broadcast-tower"></i> بث مباشر للعالم</span></h2>
+        </div>
+        <div class="user-info">
+            <span><i class="fas fa-user-shield"></i> 3tx | المدير</span>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
+        </div>
     </div>
 
-    <div class="auth-box" id="authBox"></div>
-
-    <div class="add-post" id="addPostBox">
-        <h3><i class="fas fa-plus-circle"></i> إضافة منشور جديد</h3>
-        <input type="text" id="titleInput" placeholder="العنوان">
-        <textarea id="descInput" rows="3" placeholder="محتوى المنشور..."></textarea>
-        <button id="publishBtn"><i class="fas fa-paper-plane"></i> نشر المنشور</button>
+    <div class="add-card">
+        <h3><i class="fas fa-plus-circle"></i> إضافة محتوى جديد</h3>
+        <input type="text" id="itemTitle" placeholder="العنوان (مثال: منتج جديد، عرض خاص، خبر)">
+        <textarea id="itemDesc" rows="4" placeholder="الوصف التفصيلي للمحتوى..."></textarea>
+        <button id="addItemBtn"><i class="fas fa-save"></i> نشر المحتوى</button>
     </div>
 
-    <div class="posts-title"><i class="fas fa-newspaper"></i> جميع المنشورات</div>
-    <div id="postsGrid" class="posts-grid"><div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري الاتصال بالخادم...</div></div>
+    <h3 style="color: white; margin-bottom: 15px;"><i class="fas fa-list-ul"></i> جميع المحتويات</h3>
+    <div id="contentList" class="content-grid"></div>
 </div>
 
 <script>
     // ========== إعدادات Ably ==========
     const ABLY_API_KEY = "0VdV6Q.M-UZTw:4lse8SO8U7yh-FbxOuYdlUwSF3Dsb9woTrZhpUsE6rY";
-    const CHANNEL_NAME = "3txpro_posts";
+    const CHANNEL_NAME = "3txpro_live";
     
     // بيانات المدير
     const ADMIN_USER = "3tx";
     const ADMIN_PASS = "MM123456";
-    const WHATSAPP = "966500000000"; // غير إلى رقمك
-
+    const WHATSAPP_NUMBER = "966500000000";
+    
+    // مفاتيح التخزين المحلي
+    const POSTS_KEY = "3txpro_posts";
+    const VIEWS_KEY = "3txpro_views";
+    
     let currentUser = null;
-    let allPosts = [];
+    let contents = [];
     let ably = null;
     let channel = null;
-
-    // ========== اتصال Ably ==========
+    
+    // ========== اتصال Ably للبث المباشر ==========
     async function initAbly() {
         try {
             ably = new Ably.Realtime({ key: ABLY_API_KEY });
             channel = ably.channels.get(CHANNEL_NAME);
             
-            // استقبال التحديثات من المستخدمين الآخرين
+            // استقبال التحديثات من أي جهاز حول العالم
             channel.subscribe("posts_update", (message) => {
-                allPosts = message.data;
-                displayPosts();
+                contents = message.data;
+                saveContentsLocal();
+                renderContents();
             });
             
-            // طلب آخر البيانات
+            // طلب آخر البيانات عند الاتصال
             channel.presence.enter();
-            requestLatestPosts();
-            
-            document.getElementById("postsGrid").innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+            requestLatestData();
         } catch(e) {
             console.error("Ably error:", e);
-            document.getElementById("postsGrid").innerHTML = '<div class="empty">خطأ في الاتصال بالخادم</div>';
         }
     }
     
-    function requestLatestPosts() {
+    function requestLatestData() {
         channel.publish("request_posts", {});
     }
     
-    // نشر التحديثات للجميع
-    async function broadcastPosts() {
+    // بث التحديثات للعالم كله
+    async function broadcastToWorld() {
         if (channel) {
-            channel.publish("posts_update", allPosts);
+            channel.publish("posts_update", contents);
         }
+        saveContentsLocal();
     }
     
-    // ========== المنشورات ==========
-    function displayPosts() {
-        let container = document.getElementById("postsGrid");
+    // ========== المشاهدات الحقيقية ==========
+    function loadViews() {
+        const stored = localStorage.getItem(VIEWS_KEY);
+        return stored ? JSON.parse(stored) : {};
+    }
+    
+    function saveViews(views) {
+        localStorage.setItem(VIEWS_KEY, JSON.stringify(views));
+    }
+    
+    function getPostViews(itemId) {
+        const views = loadViews();
+        return views[itemId] || 0;
+    }
+    
+    function recordView(itemId) {
+        const today = new Date().toDateString();
+        const userKey = `viewed_${today}`;
+        let viewed = localStorage.getItem(userKey);
+        viewed = viewed ? JSON.parse(viewed) : [];
+        
+        if (viewed.includes(itemId)) return false;
+        
+        viewed.push(itemId);
+        localStorage.setItem(userKey, JSON.stringify(viewed));
+        
+        let views = loadViews();
+        views[itemId] = (views[itemId] || 0) + 1;
+        saveViews(views);
+        renderContents();
+        return true;
+    }
+    
+    // ========== تحميل وحفظ المحتوى محلياً ==========
+    function loadContentsLocal() {
+        const stored = localStorage.getItem(POSTS_KEY);
+        if (stored) {
+            contents = JSON.parse(stored);
+        } else {
+            contents = [];
+        }
+        renderContents();
+    }
+    
+    function saveContentsLocal() {
+        localStorage.setItem(POSTS_KEY, JSON.stringify(contents));
+    }
+    
+    // عرض المحتوى في الواجهة
+    function renderContents() {
+        const container = document.getElementById('contentList');
         if (!container) return;
         
-        if (!allPosts || allPosts.length === 0) {
-            container.innerHTML = `<div class="empty"><i class="fas fa-inbox" style="font-size:50px"></i><h3>لا توجد منشورات</h3><p>سجل كمدير (3tx / MM123456) وأضف أول منشور</p></div>`;
+        if (contents.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>لا يوجد محتوى بعد</h3>
+                    <p>أضف أول محتوى لك من خلال النموذج أعلاه وسيراه العالم فوراً</p>
+                </div>
+            `;
             return;
         }
         
-        container.innerHTML = "";
-        for (let i = 0; i < allPosts.length; i++) {
-            let post = allPosts[i];
-            let html = `
-                <div class="post">
-                    <h3>📌 ${escapeHtml(post.title)}</h3>
-                    <p>${escapeHtml(post.desc)}</p>
-                    <div class="post-footer">
-                        <button class="whatsapp-btn" onclick="sendToWhatsapp('${escapeHtml(post.title)}')"><i class="fab fa-whatsapp"></i> طلب عبر واتساب</button>
+        container.innerHTML = '';
+        contents.forEach(item => {
+            const viewsCount = getPostViews(item.id);
+            const card = document.createElement('div');
+            card.className = 'content-item';
+            card.innerHTML = `
+                <h4>${escapeHtml(item.title)}</h4>
+                <p>${escapeHtml(item.desc)}</p>
+                <div class="views-stats">
+                    <i class="fas fa-eye"></i> ${viewsCount} مشاهدة
+                </div>
+                <button class="whatsapp-btn" data-id="${item.id}" data-title="${escapeHtml(item.title)}">
+                    <i class="fab fa-whatsapp"></i> طلب عبر واتساب
+                </button>
             `;
+            
             if (currentUser && currentUser.isAdmin) {
-                html += `
-                    <div class="admin-btns">
-                        <button class="edit-btn" onclick="editPost(${post.id})"><i class="fas fa-edit"></i> تعديل</button>
-                        <button class="delete-btn" onclick="deletePost(${post.id})"><i class="fas fa-trash"></i> حذف</button>
-                    </div>
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'item-actions';
+                actionsDiv.innerHTML = `
+                    <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> تعديل</button>
+                    <button class="delete-btn" data-id="${item.id}"><i class="fas fa-trash"></i> حذف</button>
                 `;
+                card.appendChild(actionsDiv);
             }
-            html += `</div></div>`;
-            container.innerHTML += html;
+            
+            container.appendChild(card);
+        });
+        
+        // ربط أزرار الواتساب
+        document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const itemId = parseInt(btn.getAttribute('data-id'));
+                const itemTitle = btn.getAttribute('data-title');
+                recordView(itemId);
+                const message = `مرحباً، أرغب في الاستفسار عن: ${itemTitle}`;
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+            });
+        });
+        
+        // ربط أزرار التعديل والحذف للمدير
+        if (currentUser && currentUser.isAdmin) {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    editItem(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    deleteItem(id);
+                });
+            });
         }
     }
     
     function escapeHtml(str) {
-        if (!str) return "";
+        if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
@@ -161,127 +581,115 @@
         });
     }
     
-    window.sendToWhatsapp = function(title) {
-        let msg = `مرحباً، أرغب في الاستفسار عن: ${title}`;
-        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
-    };
-    
-    async function publishNewPost() {
-        let title = document.getElementById("titleInput").value;
-        let desc = document.getElementById("descInput").value;
+    // إضافة محتوى جديد
+    async function addNewItem() {
+        const title = document.getElementById('itemTitle').value.trim();
+        const desc = document.getElementById('itemDesc').value.trim();
         
-        if (!title.trim()) {
-            alert("❌ الرجاء كتابة العنوان");
+        if (!title) {
+            alert('الرجاء كتابة العنوان');
+            return;
+        }
+        if (!desc) {
+            alert('الرجاء كتابة الوصف');
             return;
         }
         
-        let newPost = {
+        const newItem = {
             id: Date.now(),
             title: title,
             desc: desc
         };
         
-        allPosts.unshift(newPost);
-        await broadcastPosts();
+        contents.unshift(newItem);
+        await broadcastToWorld();
         
-        document.getElementById("titleInput").value = "";
-        document.getElementById("descInput").value = "";
-        alert("✅ تم نشر المنشور! جميع زبائنك حول العالم يرونه الآن");
+        document.getElementById('itemTitle').value = '';
+        document.getElementById('itemDesc').value = '';
+        
+        alert('✅ تم نشر المنشور! جميع زبائنك حول العالم يرونه الآن');
+        
+        const btn = document.getElementById('addItemBtn');
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => { btn.style.transform = ''; }, 200);
     }
     
-    window.editPost = async function(id) {
-        let post = allPosts.find(p => p.id === id);
-        if (!post) return;
-        let newTitle = prompt("تعديل العنوان", post.title);
+    // تعديل عنصر
+    async function editItem(id) {
+        const item = contents.find(c => c.id === id);
+        if (!item) return;
+        
+        const newTitle = prompt('✏️ تعديل العنوان', item.title);
         if (newTitle === null) return;
-        let newDesc = prompt("تعديل المحتوى", post.desc);
+        
+        const newDesc = prompt('📝 تعديل الوصف', item.desc);
         if (newDesc === null) return;
-        post.title = newTitle;
-        post.desc = newDesc;
-        await broadcastPosts();
-        displayPosts();
-    };
-    
-    window.deletePost = async function(id) {
-        if (!confirm("⚠️ هل تريد حذف هذا المنشور؟")) return;
-        allPosts = allPosts.filter(p => p.id !== id);
-        await broadcastPosts();
-        displayPosts();
-    };
-    
-    // ========== تسجيل الدخول ==========
-    function login(username, password) {
-        if (username === ADMIN_USER && password === ADMIN_PASS) {
-            return { success: true, isAdmin: true };
-        }
-        return { success: false, msg: "❌ اسم المستخدم أو كلمة المرور غير صحيحة" };
+        
+        item.title = newTitle.trim();
+        item.desc = newDesc.trim();
+        await broadcastToWorld();
     }
     
+    // حذف عنصر
+    async function deleteItem(id) {
+        if (confirm('⚠️ هل أنت متأكد من حذف هذا المحتوى؟ لا يمكن التراجع.')) {
+            contents = contents.filter(c => c.id !== id);
+            await broadcastToWorld();
+        }
+    }
+    
+    // تسجيل الدخول
+    function login() {
+        const username = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
+        const errorDiv = document.getElementById('loginError');
+        
+        if (username === ADMIN_USER && password === ADMIN_PASS) {
+            currentUser = { isAdmin: true };
+            localStorage.setItem("session", JSON.stringify(currentUser));
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            errorDiv.innerHTML = '';
+            loadContentsLocal();
+        } else {
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> اسم المستخدم أو كلمة المرور غير صحيحة';
+        }
+    }
+    
+    // تسجيل الخروج
     function logout() {
         currentUser = null;
         localStorage.removeItem("session");
-        updateAuthUI();
-        displayPosts();
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('loginUser').value = '';
+        document.getElementById('loginPass').value = '';
     }
-    
-    function updateAuthUI() {
-        let authBox = document.getElementById("authBox");
-        let addBox = document.getElementById("addPostBox");
-        
-        if (currentUser && currentUser.isAdmin) {
-            authBox.innerHTML = `
-                <div class="user-card">
-                    <i class="fas fa-user-cog"></i>
-                    <strong>المدير ${ADMIN_USER}</strong>
-                    <span style="background:#e67e22; color:white; padding:4px 12px; border-radius:30px;">صلاحية كاملة</span>
-                    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
-                </div>
-            `;
-            addBox.style.display = "block";
-        } else {
-            authBox.innerHTML = `
-                <div class="auth-form">
-                    <input type="text" id="loginUser" placeholder="اسم المستخدم">
-                    <input type="password" id="loginPass" placeholder="كلمة المرور">
-                    <button class="btn-login" onclick="doLogin()">تسجيل دخول</button>
-                </div>
-            `;
-            addBox.style.display = "none";
-        }
-    }
-    
-    window.doLogin = function() {
-        let username = document.getElementById("loginUser").value;
-        let password = document.getElementById("loginPass").value;
-        
-        if (!username || !password) {
-            alert("❌ الرجاء إدخال البيانات");
-            return;
-        }
-        
-        let result = login(username, password);
-        if (result.success) {
-            currentUser = { isAdmin: result.isAdmin };
-            localStorage.setItem("session", JSON.stringify(currentUser));
-            updateAuthUI();
-            displayPosts();
-        } else {
-            alert(result.msg);
-        }
-    };
     
     function restoreSession() {
-        let saved = localStorage.getItem("session");
-        if (saved) {
-            currentUser = JSON.parse(saved);
+        const stored = localStorage.getItem("session");
+        if (stored) {
+            currentUser = JSON.parse(stored);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadContentsLocal();
         }
-        updateAuthUI();
     }
     
     // ========== بدء التشغيل ==========
+    document.getElementById('submitLogin').addEventListener('click', login);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('addItemBtn').addEventListener('click', addNewItem);
+    
+    document.getElementById('loginUser').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+    });
+    document.getElementById('loginPass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') login();
+    });
+    
     restoreSession();
     initAbly();
-    document.getElementById("publishBtn")?.addEventListener("click", publishNewPost);
 </script>
 </body>
-</html>
+    </html>
