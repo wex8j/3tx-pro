@@ -26,7 +26,6 @@
             margin: 0 auto;
         }
 
-        /* الهيدر الرئيسي */
         .header {
             background: white;
             border-radius: 25px;
@@ -54,7 +53,6 @@
             display: block;
         }
 
-        /* واجهة تسجيل الدخول المدمجة */
         .login-bar {
             background: #f8f9fa;
             border-radius: 60px;
@@ -124,15 +122,12 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
         }
 
         .logout-btn:hover {
             background: #c0392b;
-            transform: scale(1.02);
         }
 
-        /* نموذج إضافة منشور (للمدير فقط) */
         .post-form {
             background: white;
             border-radius: 25px;
@@ -166,7 +161,6 @@
             cursor: pointer;
         }
 
-        /* شبكة المنشورات */
         .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -275,18 +269,14 @@
 </head>
 <body>
 <div class="main-container">
-    <!-- الهيدر مع واجهة تسجيل الدخول المدمجة -->
     <div class="header">
         <div class="logo">
             <h1><i class="fas fa-crown"></i> متجر 3tx Pro</h1>
             <span>أحدث العروض والمنتجات</span>
         </div>
-        <div id="loginArea">
-            <!-- سيتم تعبئتها بالجافاسكريبت -->
-        </div>
+        <div id="loginArea"></div>
     </div>
 
-    <!-- نموذج إضافة منشور (للمدير فقط) -->
     <div class="post-form" id="postForm">
         <h3><i class="fas fa-plus-circle"></i> أضف منشور جديد</h3>
         <input type="text" id="postTitle" placeholder="العنوان">
@@ -294,84 +284,57 @@
         <button id="publishBtn"><i class="fas fa-paper-plane"></i> نشر المنشور</button>
     </div>
 
-    <!-- شبكة المنشورات -->
     <div id="postsContainer" class="content-grid"></div>
 </div>
 
 <script>
-    // ========== بيانات المدير الثابتة ==========
+    // بيانات المدير
     const ADMIN_USER = "3tx";
     const ADMIN_PASS = "MM123456";
-    
-    // رقم الواتساب (غير إلى رقمك)
     const WHATSAPP_NUMBER = "966500000000";
     
     // مفاتيح التخزين
     const POSTS_KEY = "3txpro_posts";
     const USERS_KEY = "3txpro_users";
     const VIEWS_KEY = "3txpro_views";
-    const USER_VIEWS_KEY = "3txpro_user_daily_views";
     const SESSION_KEY = "3txpro_current_user";
     
-    // المستخدم الحالي
     let currentUser = null;
-    
-    // المنشورات
     let posts = [];
     
-    // ========== دوال المشاهدات الحقيقية ==========
-    function loadViews() {
-        const stored = localStorage.getItem(VIEWS_KEY);
-        return stored ? JSON.parse(stored) : {};
-    }
-    
-    function saveViews(views) {
-        localStorage.setItem(VIEWS_KEY, JSON.stringify(views));
-    }
-    
+    // ========== المشاهدات الحقيقية ==========
     function getPostViews(postId) {
-        const views = loadViews();
-        return views[postId] || 0;
+        const views = localStorage.getItem(VIEWS_KEY);
+        const viewsObj = views ? JSON.parse(views) : {};
+        return viewsObj[postId] || 0;
     }
     
     function recordView(postId) {
         const today = new Date().toDateString();
-        const userKey = `${USER_VIEWS_KEY}_${today}`;
-        let viewedPosts = localStorage.getItem(userKey);
-        viewedPosts = viewedPosts ? JSON.parse(viewedPosts) : [];
+        const userKey = `viewed_${today}`;
+        let viewed = localStorage.getItem(userKey);
+        viewed = viewed ? JSON.parse(viewed) : [];
         
-        if (viewedPosts.includes(postId)) {
-            return false;
-        }
+        if (viewed.includes(postId)) return;
         
-        viewedPosts.push(postId);
-        localStorage.setItem(userKey, JSON.stringify(viewedPosts));
+        viewed.push(postId);
+        localStorage.setItem(userKey, JSON.stringify(viewed));
         
-        let views = loadViews();
-        views[postId] = (views[postId] || 0) + 1;
-        saveViews(views);
-        return true;
-    }
-    
-    // تسجيل مشاهدة تلقائية لجميع المنشورات
-    function recordAllViews() {
-        posts.forEach(post => {
-            recordView(post.id);
-        });
+        let views = localStorage.getItem(VIEWS_KEY);
+        let viewsObj = views ? JSON.parse(views) : {};
+        viewsObj[postId] = (viewsObj[postId] || 0) + 1;
+        localStorage.setItem(VIEWS_KEY, JSON.stringify(viewsObj));
         renderPosts();
     }
     
-    // ========== دوال المنشورات ==========
+    // ========== المنشورات ==========
     function loadPosts() {
         const stored = localStorage.getItem(POSTS_KEY);
         if (stored) {
             posts = JSON.parse(stored);
         } else {
-            posts = [
-                { id: 1, title: "🎉 عرض خاص", desc: "خصم 30% على جميع المنتجات لفترة محدودة! اطلب الآن" },
-                { id: 2, title: "📱 منتج جديد", desc: "أحدث الأجهزة الذكية وصلت متجرنا" },
-                { id: 3, title: "🚚 توصيل مجاني", desc: "توصيل مجاني لكل الطلبات فوق 150 ريال" }
-            ];
+            // بدون منشورات تجريبية - فارغ تماماً
+            posts = [];
             savePosts();
         }
         renderPosts();
@@ -415,32 +378,23 @@
         }
     }
     
-    // ========== دوال المستخدمين ==========
-    function loadUsers() {
-        const stored = localStorage.getItem(USERS_KEY);
-        if (stored) {
-            return JSON.parse(stored);
-        }
-        return [];
-    }
-    
-    function saveUsers(users) {
-        localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
-    
+    // ========== المستخدمين ==========
     function registerUser(username, password) {
-        const users = loadUsers();
-        if (users.find(u => u.username === username)) {
+        const users = localStorage.getItem(USERS_KEY);
+        let usersArr = users ? JSON.parse(users) : [];
+        
+        if (usersArr.find(u => u.username === username)) {
             return { success: false, error: "اسم المستخدم موجود مسبقاً" };
         }
         if (username.length < 3) {
-            return { success: false, error: "اسم المستخدم يجب أن يكون 3 أحرف على الأقل" };
+            return { success: false, error: "اسم المستخدم 3 أحرف على الأقل" };
         }
         if (password.length < 4) {
-            return { success: false, error: "كلمة المرور يجب أن تكون 4 أحرف على الأقل" };
+            return { success: false, error: "كلمة المرور 4 أحرف على الأقل" };
         }
-        users.push({ username, password });
-        saveUsers(users);
+        
+        usersArr.push({ username, password });
+        localStorage.setItem(USERS_KEY, JSON.stringify(usersArr));
         return { success: true };
     }
     
@@ -448,8 +402,9 @@
         if (username === ADMIN_USER && password === ADMIN_PASS) {
             return { success: true, isAdmin: true, username };
         }
-        const users = loadUsers();
-        const user = users.find(u => u.username === username && u.password === password);
+        const users = localStorage.getItem(USERS_KEY);
+        const usersArr = users ? JSON.parse(users) : [];
+        const user = usersArr.find(u => u.username === username && u.password === password);
         if (user) {
             return { success: true, isAdmin: false, username };
         }
@@ -463,13 +418,13 @@
         renderPosts();
     }
     
-    // ========== عرض الواجهة ==========
+    // ========== عرض المنشورات للجميع ==========
     function renderPosts() {
         const container = document.getElementById("postsContainer");
         if (!container) return;
         
         if (posts.length === 0) {
-            container.innerHTML = `<div class="empty-state"><i class="fas fa-newspaper"></i><h3>لا توجد منشورات</h3><p>أضف أول منشور الآن</p></div>`;
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-newspaper"></i><h3>لا توجد منشورات</h3><p>أضف أول منشور الآن (سجل كمدير 3tx / MM123456)</p></div>`;
             return;
         }
         
@@ -490,6 +445,7 @@
                 </button>
             `;
             
+            // أزرار التعديل والحذف تظهر فقط للمدير
             if (currentUser && currentUser.isAdmin) {
                 const actionsDiv = document.createElement("div");
                 actionsDiv.className = "admin-actions";
@@ -503,17 +459,18 @@
             container.appendChild(card);
         });
         
+        // أزرار الواتساب
         document.querySelectorAll(".whatsapp-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const postId = parseInt(btn.getAttribute("data-id"));
                 const postTitle = btn.getAttribute("data-title");
                 recordView(postId);
-                renderPosts();
                 const message = `مرحباً، أرغب في الاستفسار عن: ${postTitle}`;
                 window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
             });
         });
         
+        // أزرار التعديل والحذف للمدير
         if (currentUser && currentUser.isAdmin) {
             document.querySelectorAll(".edit-btn").forEach(btn => {
                 btn.addEventListener("click", (e) => {
@@ -548,7 +505,7 @@
         });
     }
     
-    // ========== تحديث واجهة تسجيل الدخول ==========
+    // ========== واجهة تسجيل الدخول ==========
     function updateLoginUI() {
         const loginArea = document.getElementById("loginArea");
         const postForm = document.getElementById("postForm");
@@ -580,7 +537,7 @@
                 <div class="login-bar">
                     <input type="text" id="loginUsername" placeholder="اسم المستخدم">
                     <input type="password" id="loginPassword" placeholder="كلمة المرور">
-                    <button class="btn-login" id="doLoginBtn">دخول</button>
+                    <button class="btn-login" id="doLoginBtn">تسجيل دخول</button>
                     <button class="btn-signup" id="doSignupBtn">إنشاء حساب</button>
                 </div>
             `;
@@ -612,10 +569,8 @@
             localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
             updateLoginUI();
             renderPosts();
-            if (document.getElementById("loginUsername")) {
-                document.getElementById("loginUsername").value = "";
-                document.getElementById("loginPassword").value = "";
-            }
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
         } else {
             alert(result.error);
         }
@@ -632,33 +587,27 @@
         
         const result = registerUser(username, password);
         if (result.success) {
-            alert("تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول");
-            if (document.getElementById("loginUsername")) {
-                document.getElementById("loginUsername").value = "";
-                document.getElementById("loginPassword").value = "";
-            }
+            alert("✅ تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول");
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
         } else {
             alert(result.error);
         }
     }
     
-    // استعادة الجلسة
     function restoreSession() {
         const stored = localStorage.getItem(SESSION_KEY);
         if (stored) {
             currentUser = JSON.parse(stored);
-            updateLoginUI();
-            renderPosts();
-        } else {
-            updateLoginUI();
-            renderPosts();
         }
+        updateLoginUI();
+        renderPosts();
     }
     
-    // ========== إضافة منشور (للمدير) ==========
+    // ========== نشر منشور ==========
     function publishPost() {
         if (!currentUser || !currentUser.isAdmin) {
-            alert("يجب تسجيل الدخول كمدير لإضافة منشور");
+            alert("❌ يجب تسجيل الدخول كمدير لإضافة منشور (3tx / MM123456)");
             return;
         }
         const title = document.getElementById("postTitle").value;
@@ -666,20 +615,14 @@
         if (addPost(title, desc)) {
             document.getElementById("postTitle").value = "";
             document.getElementById("postDesc").value = "";
+            alert("✅ تم نشر المنشور! الزبائن يرونه الآن");
         }
     }
     
-    // ========== بدء التطبيق ==========
+    // ========== بدء التشغيل ==========
     document.getElementById("publishBtn")?.addEventListener("click", publishPost);
-    
     loadPosts();
     restoreSession();
-    
-    setTimeout(() => {
-        if (posts.length > 0) {
-            recordAllViews();
-        }
-    }, 500);
 </script>
 </body>
-</html>
+    </html>
